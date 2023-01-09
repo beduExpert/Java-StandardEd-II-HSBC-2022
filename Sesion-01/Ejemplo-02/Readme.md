@@ -1,112 +1,245 @@
-## Ejemplo 2: 
+## Ejemplo 02: Objetos como respuesta
 
-### Objetivo
-- Conectar una base de datos Mongo con Spring
-- Comprender la persistencia en Mongo desde Spring
-- Reafirmar conceptos de MongoDB desde Spring
+### OBJETIVO
 
-### Requisitos
-- MongoDB instalado
-- JDK 8 o superior
-- IDE de tu preferencia
-- mongodb compass (Recomendado pero no necesario)
+- Regresar un objeto JSON como respuesta a una petición HTTP
 
-### Desarrollo
-1. Se crea un proyecto Java con JDK 8 o superior.
-2. Se crea una Clase llamada `User` y se agrega la anotación `@Document(collection = "users")` (Esta anotación especifica que la clase será mapeada a un documento en Mongo, `collection = "users"` especifica el nombre del documento en caso que no se desee usar el nombre de la clase).
-3. Se agregan los atributos de la clase. El único atributo especial es `id`. Este debe ser de tipo String (corresponde al campo `ObjectId`) y debe ser anotado con `@Id` (De esta manera se especifica que esta propiedad será usada como identificador del documento).
-4. Para reducir codigo se utilizará la librería Lombok y las siguientes anotaciones :
-- `@AllArgsConstructor`: Crea Un constructor con todos los atributos (excepto los finales)
-- `@NoArgsConstructor`: Crera un constructor sin atributos (vacío)
-- `@Data`: Crea los `getters` y `setters` comunes en java además de sobre-escribir el método `equals` y `hashCode` de una manera común (para más info: https://projectlombok.org/features/all).
 
-El código quedaría de la siguiente manera:
+### DESARROLLO
+
+Crea un proyecto usando Spring Initializr desde el IDE IntelliJ con las siguientes opciones:
+
+  - Gradle Proyect (no te preocupes, no es necesario que tengas Gradle instalado).
+  - Lenguaje: **Java**.
+  - Versión de Spring Boot, la versión estable más reciente
+  - Grupo, artefacto y nombre del proyecto.
+  - Forma de empaquetar la aplicación: **jar**.
+  - Versión de Java: **11** o superior.
+
+![](img/img_01.png)
+
+En la siguiente ventana elige Spring Web como la única dependencia del proyecto:
+
+![imagen](img/img_02.png)
+
+Presiona el botón "Finish".
+
+Ahora, crea dos paquetes dentro de la estructura creada por IntelliJ. El primer paquete se llamará `model` y el segundo `controller`:
+
+![](img/img_03.png)
+
+Dentro del paquete `model` crea una nueva clase llamada `Usuario`. Esta reprentará a un usuario que crearemos dentro del sistema. Esta clase tendrá las siguientes propiedades:
 
 ```java
-package org.bedu.ejemplo02.documents;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.Date;
-
-@Document(collection = "users")
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
-public class User {
-
-    @Id
-    private String id;
-
-    private String username;
-    private String email;
-    private String Password;
-    private Date createdAt;
-    private Date updatedAt;
+public class Usuario {
+    private String nombre;
+    private String apellido;
+    private String usuario;
+    private String correoElectronico;
+    private String password;
+    private Direccion direccion;
 }
 ```
-5. Ahora, se creará el repositorio con el que se manejará la persistencia y las operaciones en BD de la entidad anterior:
-```java
-package org.bedu.ejemplo02.Repositories;
 
-import org.bedu.ejemplo02.documents.User;
-import org.springframework.data.mongodb.repository.MongoRepository;
+Como puedes ver, hemos agregado al final una referencia a una nueva clase, `Direccion`, que crearemos en un momento. Esta clase nos ayudará a demostrar como usando Spring MVC es muy sencillo regresar árboles de objetos, u objetos anidados dentro de otros objetos, dentro de las respuestas creadas por nuestros controladores.
 
-public interface UserRepository extends MongoRepository<User, String> {
-}
-```
-Como se muestra, el código es realmente sencillo gracias a la interfáz `CrudRepository` de la cuál se heredan las operaciones básicas de un CRUD.
-
-6. Se Agrega la configuración en el archivo `application.properties` necesaria para establecer la conexión a la BD Mongo:
-```
-spring.data.mongodb.uri=mongodb://localhost:27017/ejemplo_dos
-```
-7. Para observar la persistencia en mongo desde Spring, se crearán algunos registros con el repositorio `UserRepository`, esto se puede hacer de varias maneras, pero quizá la manera más rápida es utilizando la clase la clase marcada como principal y la interfáz `CommandLineRunner`. Esta interfaz define un método llamado `run` que se ejecutará justo cuando inicia la aplicación y toma los parámetros de entrada del método main para realizar algo; Aunque en este caso, usaremos este método para borrar un documento y crear un registro en la base de datos de la siguiente manera:
+Agrega también sus métodos **getter** y **setter**. 
 
 ```java
-package org.bedu.ejemplo02;
-
-import org.bedu.ejemplo02.Repositories.UserRepository;
-import org.bedu.ejemplo02.documents.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.mongodb.core.MongoTemplate;
-
-import java.util.Date;
-import java.util.logging.Logger;
-
-@SpringBootApplication
-public class Ejemplo02Application implements CommandLineRunner {
-
-    private final Logger log = Logger.getLogger(this.getClass().getName());
-
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-    public static void main(String[] args) {
-        SpringApplication.run(Ejemplo02Application.class, args);
+public class Usuario {
+    private String nombre;
+    private String apellido;
+    private String usuario;
+    private String correoElectronico;
+    private String password;
+    private Direccion direccion;
+    
+    
+    public String getNombre() {
+        return nombre;
     }
 
-    @Override
-    public void run(String... args) throws Exception {
-        mongoTemplate.dropCollection("users");
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-        User user = new User(null, "rosaHdez", " rosa.hdez@email.com", "nosegura", new Date(), new Date());
-        user = userRepository.save(user);
-        log.info(user.toString());
+    public String getApellido() {
+        return apellido;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
+
+    public String getCorreoElectronico() {
+        return correoElectronico;
+    }
+
+    public void setCorreoElectronico(String correoElectronico) {
+        this.correoElectronico = correoElectronico;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
+    public Direccion getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(Direccion direccion) {
+        this.direccion = direccion;
     }
 }
 ```
-Notas:
-- Recordar que "users" es el nombre del documento (este se definió en la clase User).
-- `MongoTemplate` es una interfáz que define métodos muy útiles a nivel de base de datos. En este caso, como se muestra en la clase, se utilizó para eliminar el documento cada que la aplicación inicie (para consultar esta interfáz: https://docs.spring.io/spring-data/mongodb/docs/current/api/org/springframework/data/mongodb/core/MongoTemplate.html).
 
-Si se ejecuta la aplicación, y se hace examina la BD (se recomienda mongodb compass) se notará que ahora se tiene una base de datos llamada "ejemplo_dos" (ya que este nombre se definió en el archivo `application.properties`) y de igual manera un documento llamado "users" (que es el que se creó con el repositorio).
+Crea en este mismo paquete una segunda clase llamada `Direccion`. Esta representará la calle y número del usuario. Esta clase tendrá tres atributos de tipo `String`:
+
+```java
+public class Direccion {
+    private String calle;
+    private String numero;
+    private String codigoPostal;
+}
+```
+
+No olvides colocar los métodos **getter** y **setter** de esta clase.
+
+Aunque no usemos directamente los **getter** o **setter** de las clases es importante agregarlos ya que tango Spring MCV como [Jackson](https://github.com/FasterXML/jackson) (el motor de parseo y generación de JSON usado por Spring) hacen uso de estos métodos para saber qué propiedades queremos exponer y que sean incluidas en los procesos de conversión de datos entre JSON y objetos Java.
+
+Dentro del paquete `controller` crea una clase llamada `UsuarioController`. Esta clase será igual a la que creamos en el Ejemplo anterior, pero haremos unas modificaciones a su contenido.
+
+
+```java
+@RestController
+@RequestMapping("/api/v1/usuario")
+public class UsuarioController {
+    @PostMapping
+    public String creaUsuario(@RequestBody Usuario usuario) {
+        System.out.println("Creando usuario");
+        System.out.println("Nombre: " + usuario.getNombre());
+        System.out.println("Apellido: " + usuario.getApellido());
+        System.out.println("Usuario: " + usuario.getUsuario());
+        System.out.println("E-Mail: " + usuario.getCorreoElectronico());
+
+        return "Usuario Creado";
+    }
+}
+```
+
+Dentro del método `creaUsuario`, agrega unas líneas antes del final para crear un nuevo objeto de tipo `Direccion` y establece este valor como la dirección del objeto `Usuario` que recibimos como petición:
+
+```java
+
+    @PostMapping
+    public String creaUsuario(@RequestBody Usuario usuario) {
+        System.out.println("Creando usuario");
+        System.out.println("Nombre: " + usuario.getNombre());
+        System.out.println("Apellido: " + usuario.getApellido());
+        System.out.println("Usuario: " + usuario.getUsuario());
+        System.out.println("E-Mail: " + usuario.getCorreoElectronico());
+
+        Direccion direccion = new Direccion();
+        direccion.setCalle("Córdoba");
+        direccion.setNumero("56");
+        direccion.setCodigoPostal("06700");
+
+        usuario.setDireccion(direccion);
+
+        return "Usuario Creado";
+    }
+
+```
+
+Si ejecutamos la aplicación con la clase como la tenemos, obtendremos el mismo resultado que obtuvimos en el ejemplo anterior:
+
+![](img/img_04.png)
+
+Haremos dos pequeños cambios:
+
+1. Cambiar el tipo de retorno del método de `String` a `Usuario`. De esta forma le indicamos a Spring MVC que regresaremos un objeto y Spring MVC lo convertirá de forma automática a un objeto JSON antes de regresarlo al usuario. Es importante mencionar que esta conversión ocurre en automático gracias a nuestra clase está decorada con la anotación `@RestController`, de lo contrario tendríamos que indicar de forma explícita que esta conversión debe hacerse, colocando la anotación `@ResponseBody`.
+2. Regresaremos como valor de retorno del método el mismo objeto `usuario` que recibimos como parámetro, solo que esta vez tendrá establecido el valor de la dirección que estamos creando.
+
+El método queda de la siguiente forma:
+
+```java
+    @PostMapping
+    public Usuario creaUsuario(@RequestBody Usuario usuario) {
+        System.out.println("Creando usuario");
+        System.out.println("Nombre: " + usuario.getNombre());
+        System.out.println("Apellido: " + usuario.getApellido());
+        System.out.println("Usuario: " + usuario.getUsuario());
+        System.out.println("E-Mail: " + usuario.getCorreoElectronico());
+
+        Direccion direccion = new Direccion();
+        direccion.setCalle("Córdoba");
+        direccion.setNumero("56");
+        direccion.setCodigoPostal("06700");
+
+        usuario.setDireccion(direccion);
+
+        return usuario;
+    }
+```
+
+Ejecuta nuevamente la aplicación y desde Postman envía una petición a esta URL: [http://localhost:8080/api/v1/usuario](http://localhost:8080/api/v1/usuario). Recueda que esta es una petición de tipo **POST**. Coloca el siguiente contenido en el cuerpo de la petición:
+
+
+```json
+{
+    "nombre": "Beto",
+    "apellido": "Ornitorrinco",
+    "usuario": "expert", 
+    "correoElectronico": "beto@bedu.org", 
+    "password": "beto1234"
+}
+```
+
+Y debes obtener esto en Postman.
+
+![](img/img_05.png)
+
+Hagamos una segunda modificación. Si bien no hay ningún problema en regresar un objeto de esta forma, existe una mejor en la que podemos establecer algunos valores adicionales en caso de ser necesario. 
+
+spring MVC proporciona una clase especial para enviar respuestas llamada `ResponseEntity`. A la cual, además del objeto que estamos regresando, podemos establecerle un código de estatus HTTP en la respuesta. En próximos cursos entrarás más en profundidad en este tema, pero por ahora hagamos el cambio para indicar que el tipo de retorno del método es `ResponseEntity` y creemos una nueva instancia de esta para regresarla como valor.
+
+
+```java
+    @PostMapping
+    public ResponseEntity<Usuario> creaUsuario(@RequestBody Usuario usuario) {
+        System.out.println("Creando usuario");
+        System.out.println("Nombre: " + usuario.getNombre());
+        System.out.println("Apellido: " + usuario.getApellido());
+        System.out.println("Usuario: " + usuario.getUsuario());
+        System.out.println("E-Mail: " + usuario.getCorreoElectronico());
+
+        Direccion direccion = new Direccion();
+        direccion.setCalle("Córdoba");
+        direccion.setNumero("56");
+        direccion.setCodigoPostal("06700");
+
+        usuario.setDireccion(direccion);
+
+        return ResponseEntity.ok(usuario);
+    }
+```
+
+Como ves, aunque hemos hecho solo un pequeño cambio, este abre muchas posibilidades para tus futuros desarrollos.
+
+Ejecuta nuevamente la aplicación, debes ver la misma salida en Postman.
+
+![](img/img_05.png)
+
+Para ver la lista completa de los tipos de retorno que puedes usar para los manejadores de peticiones, puedes consultar la [documentación oficial de Spring MVC](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-ann-return-types).

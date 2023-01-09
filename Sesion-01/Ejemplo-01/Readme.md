@@ -1,106 +1,214 @@
-## Ejemplo 1: 
+## Ejemplo 01: Parámetros de peticiones HTTP POST y GET
 
-### Objetivo
-- Indagar en los conceptos de MongoDB (BD NoSQL) y las base de datos no relacionales.
-- Conocer las sentencias básicas de MongoDB
-- Conocer casos de uso de bases de datos no relacionales, tanto sus ventajas como desventajas.
+### OBJETIVO
 
-### Requisitos
-- MongoDB instalado
-- mongodb compass (Recomendado pero no necesario)
+- Recibir un objeto en el cuerpo de una petición HTTP POST
 
-### Desarrollo
-* En esta sección se mostrarán algunas sentencias NoSQL y algunos datos importantes para que el alumno comprenda el funcionamiento de las BD no relacionales, específicamente con MongoDB.
 
-Para esta sección se hará uso de un gestor de mongo. En caso que se prefiera utilizar la consola de linea de comandos de la página de mongo, esto será válido ya que el objetivo es conocer la funcionalidad y familiarizarse con los comandos y conceptos de MongoDB. La URL de la interfáz es la siguiente:
-https://docs.mongodb.com/manual/tutorial/getting-started/#examples
-(Parte del código de esta sección está plasmado aquí, aunque los ejercicios quizá no).
+### DESARROLLO
 
-1. Seleccionar una base de datos (Si no existe se creará al insertar un registro)
+Crea un proyecto usando Spring Initializr desde el IDE IntelliJ con las siguientes opciones:
 
-```javascript
-use users;
-```
-2. Crear un documento:
+  - Gradle Proyect (no te preocupes, no es necesario que tengas Gradle instalado).
+  - Lenguaje: **Java**.
+  - Versión de Spring Boot, la versión estable más reciente
+  - Grupo, artefacto y nombre del proyecto.
+  - Forma de empaquetar la aplicación: **jar**.
+  - Versión de Java: **11** o superior.
 
-```javascript
-db.users.insertOne({ username: "rosaHdez", email: "rosa.hdez@email.com", Password: "nosegura", createdAt: new Date(), updatedAt: new Date() });
+![](img/img_01.png)
 
-```
+En la siguiente ventana elige Spring Web como la única dependencia del proyecto:
 
-3. crear dos documentos simultaneamente:
+![imagen](img/img_02.png)
 
-```javascript
-db.users.insertMany(
-    [
-        { username: "rosaHdez", email: "rosa.hdez@email.com", Password: "nosegura", createdAt: new Date(), updatedAt: new Date() },
-        { username: "Ruben123", email: "rubn12.3@email.com", Password: "tampocoEsSegura", createdAt: new Date(), updatedAt: new Date() }
-    ]
-);
-```
-4. Seleccionar todos los usuarios (documentos) de la colección (ambas sentencias son equivalentes):
+Presiona el botón "Finish".
 
-```javascript
-db.users.find();
-db.users.find({});
+Ahora, crea dos paquetes dentro de la estructura creada por IntelliJ. El primer paquete se llamará `model` y el segundo `controller`:
+
+![](img/img_03.png)
+
+Dentro del paquete `model` crea una nueva clase llamada `Usuario`. Esta reprentará a un usuario que crearemos dentro del sistema. Esta clase tendrá las siguientes propiedades:
+
+```java
+public class Usuario {
+    private String nombre;
+    private String apellido;
+    private String usuario;
+    private String correoElectronico;
+    private String password;
+}
 ```
 
-5. Seleccionar los usuarios cuyo usuario sea "Ruben123":
 
-```javascript
-db.users.find({ username: "Ruben123" });
+
+Agrega también sus métodos **getter** y **setter**. Es importante que esta clase tenga un constructor por default, sin argumentos. Este es creado por default por el compilador si la clase no tiene ningún constructor declarado, pero si agregar alguno deberás también agregar un constructor sin argumentos:
+
+```java
+public class Usuario {
+    private String nombre;
+    private String apellido;
+    private String usuario;
+    private String correoElectronico;
+    private String password;
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getApellido() {
+        return apellido;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
+
+    public String getCorreoElectronico() {
+        return correoElectronico;
+    }
+
+    public void setCorreoElectronico(String correoElectronico) {
+        this.correoElectronico = correoElectronico;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+}
 ```
 
-6. Seleccionar cuántos usuarios tienen un usuario "Ruben123"
 
-```javascript
-db.users.find({ username: "Ruben123" }).count();
+Dentro del paquete `controller` crea una clase llamada `UsuarioController`. Esta clase recibirá la petición y la procesará. En este ejemplo lo único que hará es imprimir en consola la información recibida para crear al usuario. Lo primero que hacemos es indicar que esta clase será un manejador de peticiones, para ello la decoramos con la anotación `@RestController`:
+
+```java
+@RestController
+public class UsuarioController {
+
+}
 ```
 
-7. Agregar el campo "age" al primer registro cuyo usuario sea "Ruben123":
+A continuación, indicamos el patrón que manejará este controlador. Una buena práctica cuando creamos manejadores de peticiones REST es versionar nuestra API, esto es tan fácil como poner el número de versión en el patró de URL:
 
-```javascript
-db.users.updateOne({ _id: db.users.findOne({ username: "Ruben123" })._id }, { $set: { age: 35 } });
-```
-8. seleccionar todos los usuarios cuyo campo edad sea mayor a 30:
-```javascript
-db.users.find({ age: { $gt: 30 } } );
-```
+```java
+@RestController
+@RequestMapping("/api/v1/usuario")
+public class UsuarioController {
 
-Para ver los operadores de comparación frecuentes en en las consultas de tipo búsqueda, por ejemplo: mayor que, menor que, etc. vea la siguiente página:
-https://docs.mongodb.com/manual/reference/operator/query-comparison/
-
-### un poco más
-
-Dada la siguiente colección:
-
-```javascript
-db.inventory.insertMany([
-   { item: "journal", qty: 25, status: "A", size: { h: 14, w: 21, uom: "cm" }, tags: [ "blank", "red" ] },
-   { item: "notebook", qty: 50, status: "A", size: { h: 8.5, w: 11, uom: "in" }, tags: [ "red", "blank" ] },
-   { item: "paper", qty: 10, status: "D", size: { h: 8.5, w: 11, uom: "in" }, tags: [ "red", "blank", "plain" ] },
-   { item: "planner", qty: 0, status: "D", size: { h: 22.85, w: 30, uom: "cm" }, tags: [ "blank", "red" ] },
-   { item: "postcard", qty: 45, status: "A", size: { h: 10, w: 15.25, uom: "cm" }, tags: [ "blue" ] }
-]);
+}
 ```
 
-- Mostrar los items (documentos) que tengan estatus A, pero solamente si en su tamaño el ancho es menor a 17.
+Ahora creamos nuestro método manejador de peticiones. Como manejaremos una petición tipo **POST** decoramos el método con la anotación `@PostMapping`
 
-```javascript
-db.inventory.find({ status: "A" , "size.w": { $lt: 17 } } );
+```java
+  @PostMapping
+  public String creaUsuario() {
+  
+  }
 ```
 
-- Mostrar únicamente el nombre del item y el primer tag de los documentos que tengan estatus A y su ancho sea este entre a 15 y 30 incluyendo este último.
+Lo siguiente es indicar que este método recibirá como parámetro un objeto de tipo `Usuario`. Spring MVC en automático leerá los parámetros de la petición, creará una nueva instancia de `Usuario` y establecerá los valores de sus atributos usando los que provienen de la petición. Es por esto es que es muy importante que los nombres que enviemos en la petición sean los mismos que se encuentran en el objeto `Usuario`. Para indicarle a Spring MVC que estamos esperando estos parámetros en el cuerpo de la petición debemos marcar el parámetro `Usuario` con la anotación `@RequestBody`:
 
-```javascript
-db.inventory.find({ status: "A" , "size.w": { $lt: 30, $gte: 15 } }, {_id: 0, item: 1, tags: { $slice: 1 } } );
+
+```java
+  @PostMapping
+  public String creaUsuario(@RequestBody Usuario usuario) {
+  
+  }   
+
 ```
-En el ejemplo anterior, el segundo parámetro de la consulta muestra los atributos que se quieren retornar con un boleano (recordar que cualquier número diferente a 0 (o -0) se evaluará en verdadero, en este caso size.w y tags se retornarán), sin embargo en tags se usa el operador $slice para retornar solo el primer elemento. Recordar que MongoDB está fuertemente influenciado por JavaScript. el _id se mostrará por defecto, en este ejemplo especificamos que no se desea retornar (algo no recomendado) para cumplir con el objetivo.
 
-Si se tienen conocimientos en este lenguaje a veces es conveniente hacer analogías con la sintaxys y/o el funcionamiento, en este caso con el método slice que se le pude aplicar a los Arrays en JavaScript, lo mismo que la evaluación de los boleanos.
+Para terminar, en este método solo imprimiremos en consola el valor de los atributos, y regresaremos como valor una cadena:
 
-- Eliminar los documentos que tengan tres tags
+```java
+    @PostMapping
+    public String creaUsuario(@RequestBody Usuario usuario) {
+        System.out.println("Creando usuario");
+        System.out.println("Nombre: " + usuario.getNombre());
+        System.out.println("Apellido: " + usuario.getApellido());
+        System.out.println("Usuario: " + usuario.getUsuario());
+        System.out.println("E-Mail: " + usuario.getCorreoElectronico());
 
-```javascript
-db.inventory.deleteMany({ tags: { $size: 3 } });
+        return "Usuario Creado";
+    }
 ```
+
+Ejecuta tu aplicación y desde Postman envía una petición a esta URL: [http://localhost:8080/api/v1/usuario](http://localhost:8080/api/v1/usuario). Recueda que esta es una petición de tipo **POST**. Coloca el siguiente contenido en el cuerpo de la petición:
+
+
+```json
+{
+    "nombre": "Beto",
+    "apellido": "Ornitorrinco",
+    "usuario": "expert", 
+    "correoElectronico": "beto@bedu.org", 
+    "password": "beto1234"
+}
+```
+
+Envia la petición, debes obtener la siguiente salida en la consola:
+
+![](img/img_04.png)
+
+Y debes esto en Postman.
+
+![](img/img_05.png)
+
+Agreguemos otro parámetro. Spring MVC solo permite recibir un objeto en el cuerpo de una petición, pero podemos recibir también parámetros en la URL. Modifiquemos el manejador de peticiones para indicar que el cliente nos proporcionará el `id` del usuario como un parámetro en la URL de la petición. En la URL podemos recibir tantos parámetros como necesitemos. Usamos una notación especial, colocamos el nombre del parámetro entre llaves `{` y `}` en el patrón de URLs del manejador, de esta forma:
+
+```java
+    @PostMapping("/{id}")
+    public String creaUsuario(@RequestBody Usuario usuario) {
+    ...
+    }
+
+```
+
+Y agregamos un nuevo parámetro en la firma del método. Este parámetro debe estar marcado con la anotación `@PathVariable`. Si el nombre del parámetro y el de la variable es el mismo podemos no poner ningún atributo en la anotación, de lo contrario debemos indicar su nombre de forma explícita:
+
+```java
+    @PostMapping("/{id}")
+    public String creaUsuario(@RequestBody Usuario usuario, @PathVariable("id") long id) {
+    
+    ...
+    }
+```
+
+Modifiquemos el cuerpo del método para regresar como parte de la respuesta el `id` del usuario:
+
+```java
+    @PostMapping("/{id}")
+    public String creaUsuario(@RequestBody Usuario usuario, @PathVariable("id") long id) {
+        System.out.println("Creando usuario");
+        System.out.println("Nombre: " + usuario.getNombre());
+        System.out.println("Apellido: " + usuario.getApellido());
+        System.out.println("Usuario: " + usuario.getUsuario());
+        System.out.println("E-Mail: " + usuario.getCorreoElectronico());
+
+        return "Usuario " + id + " Creado";
+    }
+```
+
+Modifica la ruta de la petición en Postman por esta nueva: [http://localhost:8080/api/v1/usuario/156](http://localhost:8080/api/v1/usuario/156). 
+
+Envia la petición y ahora debes obtener esto como respuesta:
+
+![](img/img_06.png)
+
+Para ver una lista completa de los parámetros que puedes recibir en una petición, consulta la [Documentación Oficial de Spring MVC](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-ann-arguments).
