@@ -1,6 +1,5 @@
 ## Sesión 1: Patrón MVC con Spring Boot
 
-<img src=".github/assets/img/SpringMVC.png" align="right" height="120" hspace="10">
 <div style="text-align: justify;">
 
 ### 1. Objetivos :dart:
@@ -18,7 +17,7 @@ Una API utiliza ciertos protocolos para permitir la comunicación entre aplicacio
 
 Es importante conocer e implementar bien estos principios de diseño para crear una API con las características necesarias para ser considerada RESTful.
 
-En la sesión 4 ya tuvimos un primer acercamiento a Spring Boot, así que en esta sesión veremos algunos puntos adicionales que te ayudarán a recibir peticiones de los usuarios de los servicios, y regresar respuestas en distintos formatos.
+En el módulo anterior ya tuvimos un primer acercamiento a Spring Boot, así que en esta sesión veremos algunos puntos adicionales que te ayudarán a recibir peticiones de los usuarios de los servicios, y regresar respuestas en distintos formatos.
 
 En este módulo aprenderemos:
 
@@ -28,7 +27,6 @@ En este módulo aprenderemos:
 
 ---
 
-<img src=".github/assets/img/request.png" align="right" height="90" hspace="10">
 
 #### <ins>Tema 1: Parámetros de peticiones HTTP POST y GET</ins>
 
@@ -40,8 +38,6 @@ La forma de comunicarse entre un cliente y el servidor es a través de peticiones
 
 ---
 
-<img src=".github/assets/img/response.png" align="right" height="90" hspace="10">
-
 #### <ins>Tema 2: Regresar objetos como respuesta.</ins>
 
 Ahora que sabemos cómo recibir una petición por parte del usuario, hay que procesarla y darle una respuesta. Existen diferentes formas en las que podemos regresar una respuesta a un cliente. En la siguiente sesión veremos cómo regresar una página web, pero en el [segundo ejemplo](./Ejemplo-02) veremos cómo regresar un objeto que será automáticamente convertido en JSON para que el cliente pueda interpretarlo.
@@ -49,8 +45,6 @@ Ahora que sabemos cómo recibir una petición por parte del usuario, hay que proce
 - [**`EJEMPLO 2`**](./Ejemplo-02)
 
 ---
-
-<img src=".github/assets/img/upload.jpg" align="right" height="90" hspace="10">
 
 #### <ins>Tema 3: Carga y descarga de archivos.</ins>
 

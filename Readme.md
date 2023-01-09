@@ -9,13 +9,13 @@
  
  ### ORGANIZACIÓN DE MÓDULO 
  
- - [Sesión 1: Persistencia con BD No relacional](Sesion-01)
- - [Sesión 2: Consumo REST / SOAP](Sesion-02)
- - [Sesión 3: Creación de servicios REST / SOAP](Sesion-03)
- - [Sesión 4: Spring WebFlux](Sesion-04)
- - [Sesión 5: Protocol Buffer](Sesion-05)
- - [Sesión 6: Apache Kafka](Sesion-06)
- - [Sesión 7: Dev Tools / Actuator](Sesion-07)
- - [Sesión 8: Deploy](Sesion-08)
+ - [Sesión 1: Patrón MVC con Spring Boot](Sesion-01)
+ - [Sesión 2: Spring Data Rest](Sesion-02)
+ - [Sesión 3: Spring MVC Validation](Sesion-03)
+ - [Sesión 4: Manejo de errores y negociación de contenido](Sesion-04)
+ - [Sesión 5: Spring security](Sesion-05)
+ - [Sesión 6: Anotaciones y Pruebas Unitarias con JUnit](Sesion-06)
+ - [Sesión 7: Selenium para automatización de pruebas](Sesion-07)
+ - [Sesión 8: Despliegue con WebSphere Application Server Liberty](Sesion-08)
 
 
