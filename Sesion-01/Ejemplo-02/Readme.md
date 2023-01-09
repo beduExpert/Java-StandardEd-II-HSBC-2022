@@ -9,7 +9,7 @@
 
 Crea un proyecto usando Spring Initializr desde el IDE IntelliJ con las siguientes opciones:
 
-  - Gradle Proyect (no te preocupes, no es necesario que tengas Gradle instalado).
+  - Maven Proyect.
   - Lenguaje: **Java**.
   - Versión de Spring Boot, la versión estable más reciente
   - Grupo, artefacto y nombre del proyecto.

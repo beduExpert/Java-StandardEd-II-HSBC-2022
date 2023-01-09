@@ -1,4 +1,4 @@
-## Sesión 6: Patrón MVC con Spring Boot
+## Sesión 1: Patrón MVC con Spring Boot
 
 <img src=".github/assets/img/SpringMVC.png" align="right" height="120" hspace="10">
 <div style="text-align: justify;">
@@ -65,7 +65,7 @@ Si bien la mayor parte de la comunicación entre cliente y servidor se realizan p
 
 Encuentra las indicaciones y consejos para reflejar los avances de tu proyecto de este módulo.
 
-- [**`POSTWORK SESIÓN 6`**](./Postwork/)
+- [**`POSTWORK SESIÓN 1`**](./Postwork/)
 
 <br/>
 
