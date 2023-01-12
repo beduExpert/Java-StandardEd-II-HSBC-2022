@@ -1,79 +1,155 @@
-## Ejemplo 2: Usar un servidor REST local y ocupar los metodos GET, POST, PUT y DELETE
+## Ejemplo 2: Anidamiento de datos
 
 ### Objetivos
-* Hacer uso de otra API REST para el consumo de endpoints
-
-### Prerequisitos
-* Maven
-* JDK 11
-* Postman
+* Definir servicios que regresen datos anidados como respuesta.
 
 ### Procedimiento
 
-1. Descargar el proyecto que actuara de servidor REST
-2. Corremos el proyecto y para ver que esta corriendo entramos a la liga http://localhost:8081/ :
+1. Abrir [spring initializr](https://start.spring.io/) y crear un nuevo proyecto con las siguientes características: 
+- Maven
+- Java
+- 3.0.1
+- Jar
+- 11 
 
-    ![Salida](img/restServer.png)
+y agregar las dependencias:
 
-3. Crea el proyecto restMetodos2 con la dependencia de spring web y lombok
-```java
-    @Data
-    public class User {
+- Rest Repositories
+- H2
+- JPA
+- Lombok
 
-        private long id;	
-        private String name;
-        private String email;
-        
-        public User() {
-            super();
-        }
-        
-        public User(String name, String email) {
-            this.name = name;
-            this.email = email;
-        }
-
-        public User(long id, String name, String email) {
-            super();
-            this.id = id;
-            this.name = name;
-            this.email = email;
-        }
-
-    }
+2. Abre el proyecto en IntelliJIDEA.
+3. Verifica que en el archivo `pom.xml` estén declaradas las siguientes dependencias.
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId
+    <artifactId>spring-boot-starter-data-rest</artifactId></dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+</dependency>
 ```
-4. En la clase RestMetodos2Application adentro del metodo main colocamos el siguiente codigo:
-```java
-    RestTemplate restTemplate = new RestTemplate();
-		
-		//post
-		restTemplate = new RestTemplate();
-		HttpEntity<User> request2 = new HttpEntity<>(new User("Test", "test@test.com"));
-		User user = restTemplate.postForObject("http://localhost:8081/users", request2, User.class);
-	
-		System.out.println("POST " + user);
-		  
-		//get
-		restTemplate = new RestTemplate();
-		user = restTemplate.getForObject("http://localhost:8081/users/1", User.class);
-		  
-		System.out.println("GET "+ user);
-		//put
-		restTemplate = new RestTemplate();
-		request2 = new HttpEntity<>(new User(1,"Test put", "test@test.com"));
-		HttpEntity<User> response2 = restTemplate.exchange("http://localhost:8081/users/1", HttpMethod.PUT ,request2, User.class);
-	
-		System.out.println("PUT " + response2.getBody());
-		  
-		//delete
-		restTemplate.delete("http://localhost:8081/users/1");
+4. Agregamos lo siguiente al archivo `application.properties`
+
+```
+#H2
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2
+#JPA
+spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=create-drop
+# Datasource
+spring.datasource.url=jdbc:h2:file:~/test
+spring.datasource.username=sa
+spring.datasource.password=
+spring.datasource.driver-class-name=org.h2.Driver
+# Data Rest
+spring.data.rest.base-path: /api
 ```
 
-5. Una vez terminado lo ejecutamos y vemos que nos imprime en consola el resultado
+De este fichero la única entrada relativa a la librería Data Rest es la última. En ella especificamos la dirección donde se deben implementar las llamadas REST para acceder a las diferentes tablas que implemente nuestra aplicación. Es decir, en nuestro caso, se accederá a través de la URL: http://localhost:8080/api
 
+Las demás líneas configuran la base de datos H2 que usaremos, así como ciertas propiedades de JPA. Por supuesto dejaremos a JPA que cree la estructura de la base de datos a través de las entidades definidas
 
+5. Creamos un archivo `CustomerEntity`
 
+```java
+@Entity
+@Data
+@RestResource(rel="customers", path="customer")
+public class CustomerEntity {	
+	@Id
+	long id;	
+	@Column
+	String name;	
+	@Column
+	String address;	
+	@Column
+	String telephone;	
+        @Column @JsonIgnore
+	String secret;
+	@OneToOne
+	CityEntity city;    
+}
+```
 
+En donde se tiene una referencia a `CityEntity`.
 
+6. Ahora definimos `CityEntity` como sigue:
 
+```java
+@Entity
+@Data
+@RestResource(exported=false)
+public class CityEntity {		
+	@Id 
+	int id;
+	@Column
+	String name;
+	@Column
+	String province;
+}
+```
 
+el parámetro `exported = false` sirve para que esta entidad no sea tratada por  Data Rest y no sera accesible a traves de ninguna API.
+
+7. Creamos el repositorio correspondiente para `CustomerEntity`
+
+```java
+public interface CustomerRepository  extends CrudRepository<CustomerEntity, Long>;  {	
+	public List<CustomerEntity>; findByNameIgnoreCaseContaining(@Param("name") String name);
+}
+```
+
+8. Agregamos el siguiente cliente desde postman:
+
+```json
+{
+	"id": 1, 
+	"name":"nombre cliente 1",
+	"address":"direccion cliente 1",
+	"telephone":"telefono cliente 1", 
+	"secret": "no guardar"
+}
+```
+
+9. Podemos comprobar que ha realizado la inserción gracias a la consola de H2. Para ello iremos a la URL http://localhost:8080/h2/ y pulsaremos el botón Connect. Una vez conectados, si realizamos una query sobre la tabla CUSTOMER_ENTITY
+
+Observar que aunque hemos añadido el valor para el campo “secret” en la anterior petición POST, este no se ha guardado en la base de datos.
+
+10. Como no podemos acceder a la tabla city_entity a través de nuestra API pues así lo hemos especificado, Vamos a aprovechar que estamos en la consola y añadir un registro en la tabla, el cual asignaremos al cliente insertado.
+
+```sql
+insert into city_entity values(1,'Logroño','La Rioja');
+update customer_entity set city_id=1;
+
+```
+
+11. Ahora realizamos una petición GET desde postman
+
+12. Podemos consultar clientes también por su id 
+
+```
+http://localhost:8080/api/customer/1
+```
+
+13. O también probar el servicio de obtención de cliente por nombre ignorando mayúsculas y minúsculas
+
+```
+http://localhost:8080/api/customer/search/findByNameIgnoreCaseContaining{?name}
+```
+
+Por ejemplo 
+
+```
+http://localhost:8080/api/customer/search/findByNameIgnoreCaseContaining?name=Clien
+```

@@ -1,28 +1,12 @@
 ## Reto 1
 
 ### Objetivos
-* Hacer un mapeo de un objeto anidado 
+* Probar los servicios creados en el ejemplo anterior
 
-Crean un proyecto con spring-boot-starter-web y lombok de dependencias
+### Desarrollo
 
-Tendran que acceder a la liga https://jsonplaceholder.typicode.com/users el cual es el JSON que tendran que imprimir en consola, con la cual partiran para crear los atributos necesarios y objetos anidados que se muestran en el JSON.  
-
-Colocar un forEach para que imprima la lista de users.
-
-<details>
-  <summary>Solución</summary>
-
-  <ol>
-      <li>Creamos las siguientes clases: <li>
-         <img src="img/user.png" alt="Nueva clase"/>
-         <img src="img/company.png" alt="Nueva clase"/>
-         <img src="img/geo.png" alt="Nueva clase"/>
-         <img src="img/address.png" alt="Nueva clase"/>
-      <li>En el metodo main hacemos la peticion y imprimimos la lista de users</li>
-        <img src="img/main.png" alt="Nueva clase"/> 
-      <li>Ejecutar el proyecto</li>
-  </ol>
-
-</details>
+1. Investigar en la documentación de Spring Data Rest los servicios que se generan con el repositorio `CrudRepository`.
+2. Diseñar en postman o insomnia una petición para cada uno de los servicios implementados.
+3. Analizar los resultados así como los headers de las respuestas de cada una de las peticiones.
 
 

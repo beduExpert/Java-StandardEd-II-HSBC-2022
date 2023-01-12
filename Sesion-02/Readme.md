@@ -1,21 +1,21 @@
-## Sesión 02: Consumo REST / SOAP
+## Sesión 02: Spring Data Rest
 
 ### OBJETIVOS 
 
 - Conocer los fundamentos de REST.
-- Saber para qué se usan los métodos GET, PUT, POST y DELETE de HTTP.
-- Conocer los fundamentos de SOAP.
+- Conocer las herramientas disponibles para el desarrollo de REST API.
+- entender los diferentes tipos de repositorios disponibles en Spring Data Rest.
 
 
 #### ORGANIZACION DE LA CLASE 
 
-- Consumo de servicios web REST
+- Fundamentos de Spring Data Rest
 	- [Ejemplo 01](Ejemplo-01)
 	- [Reto 01](Reto-01)
 
-- Consumo de servicios web SOAP
+- Anidamiento de datos
 	- [Ejemplo 02](Ejemplo-02)
 	- [Reto 02](Reto-02)
 	
-- Consumo de servicio SOAP en Spring	
+- Diferentes tipos de repositorios	
 	- [Ejemplo 03](Ejemplo-03)

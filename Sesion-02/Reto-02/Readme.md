@@ -1,30 +1,20 @@
 ## Reto 2
 
 ### Objetivos
-* Enviar en un metodo POST un JSON con un objeto anidado
-* En el metodo GET mapear el objeto anidado
+* Practicar con el uso de Spring Data Rest
 
-Descargar el nuevo servidor local que se ocupara en este reto
+### Desarrollo
 
-Corremos el proyecto y para ver que esta corriendo entramos a la liga http://localhost:8081/ :
+1. Implementar una nueva entidad Product, en la que se incluyan los atributos:
 
-Ocupar el proyecto del ejemplo 2 agregando una nueva clase llamada `Phone` el cual solo tendra el atributo "number" de tipo int.
+- id 
+- name
+- price 
 
-Y la clase `User` debera tener un atributo de tipo lista de clase `Phone` y que se llame "phones".
+2. Crea un repositorio para consulta de los productos usando Spring Data Rest
 
-Hacer las modificacion en el metodo main para que se envie junto con el user un phone o varios.
+3. Implementar una entidad llamada Ticket en donde se almacene el id de un cliente junto con el id de el producto que compro (considerando únicamente compras de un único producto).
 
-<details>
-  <summary>Solución</summary>
+4. Crea el repositorio correspondiente a Ticket.
 
-  <ol>
-      <li>Creamos las siguiente clase: <li>
-         <img src="img/phone.png" alt="Nueva clase"/>
-      <li>Modificamos la clase User: <li>
-         <img src="img/user.png" alt="Nueva clase"/>
-      <li>En el metodo main hacemos las modificaciones</li>
-        <img src="img/main.png" alt="Nueva clase"/> 
-      <li>Ejecutar el proyecto</li>
-  </ol>
-
-</details>
+5. Agrega elementos a las tablas Producto y Ticket y haz consultas sobre ambas para ver la estructura que tienen los datos.

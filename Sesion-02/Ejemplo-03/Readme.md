@@ -1,64 +1,105 @@
-## Ejemplo 03: Consumo de un servicio web SOAP
+## Ejemplo 03: Diferentes tipos de repositorios 
 
 ### Objetivos
-* Aprender la forma de realizar el consumo de un SOAP en Spring
+* Reconocer otros tipos de repositorios que se pueden utilizar con Spring Data Rest
 
-### Prerequisitos
-* Maven
-* JDK 11
 
 ### Procedimiento
 
-Nota: para este ejemplo ocuparemos los proyectos ejemplo que utiliza la pagina oficial de Spring par el [servidor](https://spring.io/guides/gs/producing-web-service/) y el siguiente para [cliente](https://spring.io/guides/gs/consuming-web-service/) 
+Nos centraremos en diferentes tipos de interfaces de repositorio de Spring Data y su funcionalidad. Tocaremos: 
 
-1. Entrar a [Git](https://github.com/spring-guides/gs-soap-service.git) donde se encuentra el proyecto del servidor SOAP y clonarlo
-2. Descomprimir el proyecto
-3. Abrir el proyecto que se encuentra en la carpeta "complete" con su IDE preferido y compilarlo, otra opcion es compilarlo y correrlo con Maven:
+- CrudRepository
+- PagingAndSortingRepository
+- JpaRepository
 
-    	mvnw spring-boot:run
-
-4. Una vez corriento entramos a la siguinte url para ver que esta corriendo el servidor:
-
-    	http://localhost:8080/ws/countries.wsdl
-
-5. Entrar a [Git](https://github.com/spring-guides/gs-soap-service.git) donde se encuentra el proyecto del cliente y clonarlo
-
-    	http://localhost:8181/index.html
-
-6. Compilarlo y correrlo con Maven:
-
-    	mvnw spring-boot:run
-
-7. En la consola debe de mostrar el siguinte mensaje de "EUR":
-
-![Consola](img/consola.png)
+En pocas palabras, cada repositorio en Spring Data amplía la interfaz genérica del repositorio , pero más allá de eso, cada uno tiene una funcionalidad diferente.
 
 
-Ya que el cliente esta construido para que imprima el currency de Spain
+1. Comencemos con `CrudRepository`
 
 ```java
-    @SpringBootApplication
-    public class ConsumingWebServiceApplication {
+public interface CrudRepository<T, ID extends Serializable>
+  extends Repository<T, ID> {
 
-        public static void main(String[] args) {
-            SpringApplication.run(ConsumingWebServiceApplication.class, args);
-        }
+    <S extends T> S save(S entity);
 
-        @Bean
-        CommandLineRunner lookup(CountryClient quoteClient) {
-            return args -> {
-                String country = "Spain";
+    T findOne(ID primaryKey);
 
-                if (args.length > 0) {
-                    country = args[0];
-                }
-                GetCountryResponse response = quoteClient.getCountry(country);
-                System.out.println(response.getCountry().getCurrency());
-            };
-        }
+    Iterable<T> findAll();
 
-    }
+    Long count();
+
+    void delete(T entity);
+
+    boolean exists(ID primaryKey);
+}
 ```
 
+Observe la funcionalidad CRUD típica:
+
+- `save(…)`guarda un Iterable de entidades. Aquí, podemos pasar múltiples objetos para guardarlos en un lote
+- `findOne(…)`obtenga una sola entidad basada en el valor de la clave principal pasada
+- `findAll()`: obtenga un Iterable de todas las entidades disponibles en la base de datos
+- `count ()` devuelve el recuento de entidades totales en una tabla
+- `delete(…)` elimina una entidad basada en el objeto pasado
+- `exists (...)` verifica si existe una entidad en función del valor de clave principal pasado
+
+Esta interfaz parece bastante genérica y simple, pero en realidad proporciona todas las abstracciones de consulta básicas necesarias en una aplicación.
+
+2. Ahora veamos `PagingAndSortingRepository`
+
+```java
+public interface PagingAndSortingRepository<T, ID extends Serializable> 
+  extends CrudRepository<T, ID> {
+
+    Iterable<T> findAll(Sort sort);
+
+    Page<T> findAll(Pageable pageable);
+}
+```
+
+Esta interfaz proporciona un método findAll(Pageable pageable) , que es la clave para implementar Paginación.
+
+Cuando usamos Pageable , creamos un objeto Pageable con ciertas propiedades y tenemos que especificar al menos:
+
+- Tamaño de página
+- Número de página actual
+- Clasificación
+Entonces, supongamos que queremos mostrar la primera página de un conjunto de resultados ordenado por lastName, ascendente, que no tenga más de cinco registros cada uno. Así es como podemos lograr esto usando una PageRequest y una definición de clasificación :
+
+```java
+Sort sort = new Sort(new Sort.Order(Direction.ASC, "lastName"));
+Pageable pageable = new PageRequest(0, 5, sort);
+```
+
+Pasar el objeto paginable a la consulta de datos de Spring devolverá los resultados en cuestión (el primer parámetro de PageRequest tiene base cero).
+
+3. Finalmente veamos `JpaRepository`
+
+```java 
+public interface JpaRepository<T, ID extends Serializable> extends
+  PagingAndSortingRepository<T, ID> {
+
+    List<T> findAll();
+
+    List<T> findAll(Sort sort);
+
+    List<T> save(Iterable<? extends T> entities);
+
+    void flush();
+
+    T saveAndFlush(T entity);
+
+    void deleteInBatch(Iterable<T> entities);
+}
+```
+
+- `findAll()`  obtenga una lista de todas las entidades disponibles en la base de datos
+- `findAll(…`)  obtenga una Lista de todas las entidades disponibles y clasifíquelas usando la condición provista
+- `save(…)` guarda un Iterable de entidades. Aquí, podemos pasar múltiples objetos para guardarlos en un lote
+- `flush ()`  descarga todas las tareas pendientes a la base de datos
+- `saveAndFlush(…)` guarda la entidad y elimina los cambios inmediatamente
+- `deleteInBatch(…)` elimina un Iterable de entidades. Aquí, podemos pasar varios objetos para eliminarlos en un lote
 
 
+Claramente, la interfaz anterior extiende PagingAndSortingRepository , lo que significa que también tiene todos los métodos presentes en CrudRepository .

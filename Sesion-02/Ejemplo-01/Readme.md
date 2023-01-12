@@ -1,7 +1,7 @@
-## Ejemplo 01: Usar Spring boot para crear un cliente rest
+## Ejemplo 01: Fundamentos de Spring Data Rest
 
 ### Objetivos
-* Usar los metodos comunes GET, POST, PUT y DELETE con la clase RestTemplate
+* Entender el funcionamiento básico de Spring Data Rest
 
 ### Prerequisitos
 * Maven
@@ -9,71 +9,84 @@
 
 ### Procedimiento
 
-1. Crea el proyecto restMetodos con la dependencia de spring web y lombok
-2. Crear la clase `Post` 
+1. Abrir [spring initializr](https://start.spring.io/) y crear un nuevo proyecto con las siguientes características: 
+- Maven
+- Java
+- 3.0.1
+- Jar
+- 11 
+
+y agregar las dependencias:
+
+- Rest Repositories
+- H2
+- JPA
+
+2. Abre el proyecto en IntelliJIDEA.
+3. Verifica que en el archivo `pom.xml` estén declaradas las siguientes dependencias.
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId
+    <artifactId>spring-boot-starter-data-rest</artifactId></dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+</dependency>
+```
+
+4. Comenzaremos escribiendo un objeto de dominio para representar a un usuario de nuestro sitio web:
+
 ```java
-   @Data
-    public class Post {
+@Entity
+public class WebsiteUser {
 
-        private int userId; 
-        private int id;
-        private String title;
-        private String body;
-        
-        public Post() {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
 
-        }
-        
-        public Post(int userId, int id,String title, String body) {
-            this.userId = userId;
-            this.id = id;
-            this.title = title;
-            this.body = body;
-        }
+    private String name;
+    private String email;
 
+    // standard getters and setters
+}
+```
 
-        public Post(int userId, String title, String body) {
-            this.userId = userId;
-            this.title = title;
-            this.body = body;
-        }
+5. Ahora podemos definir un repositorio simple para esta colección:
+```java
+@RepositoryRestResource(collectionResourceRel = "users", path = "users")
+public interface UserRepository extends CrudRepository<WebsiteUser, Long> {
+    List<WebsiteUser> findByName(@Param("name") String name);
+}
+```
+
+Esta es una interfaz que le permite realizar varias operaciones con objetos WebsiteUser . También definimos una consulta personalizada que proporcionará una lista de usuarios basada en un nombre dado.
+
+La anotación @RepositoryRestResource es opcional y se usa para personalizar el punto final REST. Si decidiéramos omitirlo, Spring crearía automáticamente un punto final en `/websiteUsers` en lugar de `/users`.
+
+¡Eso es todo! Ahora tenemos una API REST totalmente funcional.
+
+6. Probemos como funciona la API, entramos a [](http://localhost:8080/), el resultado debe ser el siguiente JSON.
+```json
+{
+  "_links" : {
+    "users" : {
+      "href" : "http://localhost:8080/users{?page,size,sort}",
+      "templated" : true
+    },
+    "profile" : {
+      "href" : "http://localhost:8080/profile"
     }
+  }
+}
 ```
-3. En la clase RestMetodosApplication adentro del metodo main colocamos el siguiente codigo:
-```java
-    //get
-		RestTemplate restTemplate = new RestTemplate();
-		  Post[] posts = restTemplate
-		    .getForObject("https://jsonplaceholder.typicode.com/posts", Post[].class);
-		  
-		  for(Post post : posts) {
-			  System.out.println("GET "+ post);
-		  }
-		  
-		  //post
-		  restTemplate = new RestTemplate();
-		  HttpEntity<Post> request = new HttpEntity<>(new Post(1,"foo", "barr"));
-		  Post post = restTemplate.postForObject("https://jsonplaceholder.typicode.com/posts", request, Post.class);
-		
-		  System.out.println("POST " + post);
-		  
-		//delete
-		  restTemplate.delete("https://jsonplaceholder.typicode.com/posts/1");
-		
-		  
-		//put
-		  restTemplate = new RestTemplate();
-		  request = new HttpEntity<>(new Post(1,1,"foasdldkasdkaso", "barr"));
-		  HttpEntity<Post> response = restTemplate.exchange("https://jsonplaceholder.typicode.com/posts/1", HttpMethod.PUT ,request, Post.class);
-		
-		  System.out.println("PUT " + response.getBody());
-```
-
-4. Una vez terminado lo ejecutamos y vemos que nos imprime en consola el resultado
-
-
-
-
 
 
 
