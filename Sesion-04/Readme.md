@@ -1,20 +1,19 @@
 
-## Sesión 04: Spring WebFlux
+# Sesión 4: Manejo de errores y negociación de contenido
 
-### OBJETIVOS 
+## Objetivos
+- Implementar un manejador de errores que aproveche los códigos de estatus definidos en HTTP.
+- Usar los componentes proporcionados por Spring para el manejo de errores de una forma más sencilla y correcta.
+- Aprender a personalizar la información que se regresa a quien consume el servicio cuando ocurre un error."
 
-- Conocer Spring WebFlux y el uso de Reactive API.
-- Aprender los modelos de programación que maneja WebFlux.
-- Entender las diferencias entre Spring WebFlux y Spring MVC.
+## Organización de la clase
+- Trabajo con códigos de error HTTP
+  - [Ejemplo 1](Ejemplo-01)
+  - [Reto 1](Reto-01)
 
+- Personalización del manejo de excepciones con ResponseEntityExceptionHanlder
+  - [Ejemplo 2](Ejemplo-02)
+  - [Reto 2](Reto-02)
 
-#### ORGANIZACION DE LA CLASE 
-
-- Crear un proyecto con Spring WebFlux
-	- [Ejemplo 01](Ejemplo01)
-	- [Reto 01](Reto01)
-
-- Endpoint de la forma Function Endpoint
-	- [Ejemplo 02](Ejemplo02)
-	- [Reto 02](Reto02)
-	
+- Negociación de contenido para obtener una respuesta en XML o JSON
+  - [Ejemplo 3](Ejemplo-03)

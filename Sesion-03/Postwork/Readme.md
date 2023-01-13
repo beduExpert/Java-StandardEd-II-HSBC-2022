@@ -1,5 +1,40 @@
-## Postwork Sesión 3: Creacion de servicios REST-SOAP
+## Postwork Sesión 03
 
-Continuamos con el postwork de la sesion 2
+### Objetivo
+- Agregar validaciones a los atributos de las clases que representan el modelo de negocio de la aplicación.
+- Agregar un manejador de excepciones global para errores de validaciones y para errores generales de la aplicación, que pueda ser extendido conforme se agregan más - funcionalidades y reglas de negocio.
 
-Crear el CRUD de Endpoints de todo los repositorios. 
+
+
+#### Desarrollo   
+
+1. Agrega las validaciones que consideres necesarias. Puedes elegir las validaciones de la siguiente lista:
+- @NotNull
+- @Null
+- @AssertFalse
+- @AssertTrue
+- @DecimalMax
+- @DecimalMin
+- @Digits
+- @Size
+- @Min
+- @Max
+- @Email
+- @NotEmpty
+- @NotBlank
+- @Pattern
+- @Positive y @PositiveOrZero
+- @Negative y @NegativeOrZero
+- @Past y @PastOrPresent
+- @Future y @FutureOrPresent
+
+2. Agrega un manejador global de errores usando la anotación `@RestControllerAdvice`.
+
+3. Agrega un manejador global de errores usando la anotación `@ExceptionHandler(MethodArgumentNotValidException.class)`.
+
+3. Agrega un manejador global de errores usando la anotación `@ExceptionHandler(Exception.class)`.
+
+La estructura de tu proyecto debe quedar de la siguiente forma:
+
+![imagen](img/img_01.png)
+
