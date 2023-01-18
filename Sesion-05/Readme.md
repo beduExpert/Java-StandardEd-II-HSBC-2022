@@ -1,21 +1,30 @@
-## Sesión 5: Protocol Buffers
+## Sesión 5: Spring Security
 
 ### OBJETIVOS 
 
-- Conocer qué es Protocol Buffers y su utilidad
-- Ventajas y desventajas de su uso
-- Estructuras de sus archivos de configuración
+- Agregar seguridad a nuestra aplicación
+- Autenticación 
+- Autorización
+
+
 
 
 #### ORGANIZACION DE LA CLASE 
 
-- Conocer la estructura de los archivos .proto y compilarlos
+Antes de comenzar es importante distiguir la diferencia entre dos conceptos clave que se usarán durante toda la sesión.
+
+`Autenticación`: verificamos la identidad del usuario.
+`Autorización`: tipo de permisos que tiene ese usuario.
+
+
+- Añadiendo seguridad a los servicios con un proceso de autenticación.
 	- [Ejemplo 01](Ejemplo-01)
 	- [Reto 01](Reto-01)
+	
 
-- Protocol Buffers en una aplicación Java con Spring.
+- WebSecurityConfigurerAdapter
 	- [Ejemplo 02](Ejemplo-02)
-	- [Reto 02](Reto-02)
 
--  Comprender de manera visual la serialización y deserialización con Protocol Buffers y RestTemplate.
+- Autorización sin WebSecurityConfigurerAdapter
 	- [Ejemplo 03](Ejemplo-03)
+	- [Reto 02](Reto-02)

@@ -1,7 +1,7 @@
 ## Reto 1: 
 
 ### Objetivo
-- Conocer los archivos generados por el compilador.
+- Agregar usuarios al proyecto.
 ---
 
 ### Requisitos
@@ -9,6 +9,8 @@
 ---
 
 ### Desarrollo
-1. Explora el archivo `UsersProto.java` generado por la compilación del primer ejemplo. Se Sugiere usar un IDE y buscar las definiciones que se hicieron en el archivo `.proto`. Notar la estructura del proyecto (Métodos y propiedades) que se generaron en la clase java.
+Spring Security nos proporciona un usuario por defecto en nuestra aplicación con el que se puede acceder a todos los servicios. 
 
-2. Realizar algún cambio, (p. ej. añadir un message) y compilar nuevamente (Eliminar paquete `models.protos` si es necesario). Y verificar los cambios.
+1. Dentro de `application.properties` es posible crear nuevos usuarios. Investiga como y agrega un usuario con tu nombre y una contraseña personalizada. 
+
+2. Comprueba que tu usuario es válido iniciando sesión con él en lugar dle usuario por defecto al intentar consumir un servicio.

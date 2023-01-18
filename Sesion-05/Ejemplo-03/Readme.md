@@ -1,96 +1,151 @@
-## Ejemplo 3: 
+## Ejemplo 3
 
 ### Objetivo
-- Comprobar la serialización/deserialización protocol buffers desde Spring Boot
+- Crear una clase de seguridad usando la nueva versión de Spring Security.
 
-### requicitos
-- Reto 2
+### Requicitos
 - JDK 8+
 
-### desarrollo
+### Desarrollo
 
-1. Crea un test `SerializationTest` con la siguiente estructura:
+Desde Spring Security 5.7.0-M2  el `WebSecurityConfigurerAdapter` quedo desactualizado, ya que se alienta a los usuarios a pasar a una configuración de seguridad basada en componentes. En este ejemplo veremos la forma de hacer esta configuración basada en componentes.
 
-```java
-package org.bedu.ejemplo03;
+1. Crea un proyecto en [spring initializr](https://start.spring.io/) con las siguientes dependencias:
+  - Spring Web
+  - Lombok
+  - Spring Security
 
-import static org.assertj.core.api.Assertions.assertThat;
+2. Abre el proyecto en IntelliJ
 
-import org.bedu.ejemplo03.protos.models.LoginProto.Student;
-import org.bedu.ejemplo03.protos.models.LoginProto.User;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.web.client.RestTemplate;
+3. Crearemos un paquete `model`, `controller` y `configuration` dentro del paquete principal de la aplicación.
 
-@SpringBootTest
-@WebAppConfiguration
-class SerializationTest {
+4. Primero, definiremos nuestra clase de configuración de usuarios `UserDetailServiceConfig`:
 
-	private static final String USER_URL = "http://localhost:8080/user/2";
-	private static final String STUDENT_URL = "http://localhost:8080/student/1";
-
-	@Autowired
-	private RestTemplate restTemplate;
-
-	@Test
-	public void getUser() {
-		ResponseEntity<User> user = restTemplate.getForEntity(USER_URL, User.class);
-		System.out.println(String.format("\n%s \n", user.getBody()));
-		assertThat(user).isNotNull();
-	}
-	
-	@Test
-	public void getStudent() {
-		ResponseEntity<Student> student = restTemplate.getForEntity(STUDENT_URL, Student.class);
-		System.out.println(String.format("\n%s \n", student.getBody()));
-		assertThat(student).isNotNull();
-	}
-	
-	@Test
-	public void getUserOfStudent() {
-		ResponseEntity<Student> student = restTemplate.getForEntity(STUDENT_URL, Student.class);
-		System.out.println(String.format("\n%s \n", student.getBody()));
-		assertThat(student.getBody().getUser().getEmail()).isNotEmpty();
-	}
-
-}
-
-```
-
-Como se muestra, se está haciendo uso de un RestTemplate para obtener los datos, se anexa una impresión de todos los datos en el System.out.println para que se observen todos los datos deserializados. 
-Posteriormente se hacen las pruebas correspondientes.
-
-2. Crea un Bean de configuración en el paquete de configuración con la siguiente estructura:
 
 ```java
-package org.bedu.ejemplo03.protos.config;
-
-import java.util.Arrays;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.protobuf.ProtobufHttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
-
 @Configuration
-public class RestTemplateProtocolBufConfig {
-	
-	@Bean
-	public RestTemplate restTemplate(ProtobufHttpMessageConverter hmc) {
-	    return new RestTemplate(Arrays.asList(hmc));
-	}
+public class UserDetailServiceConfig {
+    
 }
+```
+5. Ahora, podemos definir un componente `UserDetailsManager` o `UserDetailsService` y de esta forma definir los usuarios de la aplicación :
 
+```java
+	@Bean
+    public UserDetailsService userDetailsService (BCryptPasswordEncoder bCryptPasswordEncoder){
+        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+        manager.createUser(User.withUsername("javi")
+                .password(bCryptPasswordEncoder.encode("1234"))
+                .roles("USER")
+                .build());
+        manager.createUser(User.withUsername("admin")
+                .password(bCryptPasswordEncoder.encode("admin"))
+                .roles("USER","ADMIN")
+                .build());
+        return manager;
+    }
 ```
 
-Esta marcada con la anotación `@Configuration` proporciona el Bean que se utiliza en los test. Como se muestra utiliza una clase `ProtobufHttpMessageConverter` que es la encargada de realizar el `parseo` de los datos.
+6. Por último creamos el método que indica la forma de cifrado para las contraseñas.
 
+```java
+	@Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+```
 
-3. Ejecuta la aplicación.
+7. Ahora creamos la clase de configuración de seguridad `SecurityConfig`
 
-4. Ejecuta los test (corriendo la app). Si todo está correcto, los test de serialización deberían pasar.
+```java
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
+public class SecurityConfig {
 
-5. Analiza los resultados.
+    // config
+
+}
+```
+
+8. Agregamos un atributo de debugeo en falso para evitar este proceso.
+
+```java
+	@Value("${spring.security.debug:false}")
+    boolean securityDebug;
+```
+
+9. Muy importante, si queremos evitar la desaprobación de la seguridad HTTP, podemos crear un bean SecurityFilterChain .
+
+Por ejemplo, supongamos que queremos proteger los puntos finales según los roles y dejar un punto de entrada anónimo solo para iniciar sesión. También restringiremos cualquier solicitud de eliminación a un rol de administrador. Usaremos la autenticación básica:
+
+```java 
+	@Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf()
+                .disable()
+                .authorizeHttpRequests()
+                .requestMatchers(HttpMethod.DELETE)
+                .hasRole("ADMIN")
+                .requestMatchers("/admin/**")
+                .hasRole("ADMIN")
+                .requestMatchers("/user/**")
+                .hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/login/**")
+                .anonymous()
+                .requestMatchers("/all/**")
+                .anonymous()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .httpBasic()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        return http.build();
+    }
+```
+La seguridad HTTP creará un objeto `DefaultSecurityFilterChain` para cargar filtros y comparadores de solicitudes. 
+
+10. Agregaremos un nivel de depuración e ignoraremos algunas rutas, como imágenes o scripts:
+
+```java
+	@Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.debug(securityDebug)
+                .ignoring()
+                .requestMatchers("/css/**", "/js/**", "/img/**", "/lib/**", "/favicon.ico");
+    }
+```
+
+11. Ahora definiremos una clase de controlador REST simple para nuestra aplicación dentro del paquete controllers.
+
+```java 
+@RestController
+public class ResourceController {
+    @GetMapping("/login")
+    public String loginEndpoint(){
+        return "Login!";
+    }
+
+    @GetMapping("/admin")
+    public String adminEndpoint() {
+        return "Admin!";
+    }
+
+    @GetMapping("/user")
+    public String userEndpoint() {
+        return "User!";
+    }
+
+    @GetMapping("/all")
+    public String allRolesEndpoint() {
+        return "All Roles!";
+    }
+
+    @DeleteMapping("/delete")
+    public String deleteEndpoint(@RequestBody String s) {
+        return "I am deleting " + s;
+    }
+}
+```
