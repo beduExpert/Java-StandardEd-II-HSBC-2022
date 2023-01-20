@@ -1,155 +1,96 @@
-## Postwork Sesión 6
+## Sesión 3: Pruebas dinámicas
 
-A lo largo de este proyecto reafirmaremos lo que se ha aprendido durante las sesiones.
+### 🎯 OBJETIVO
 
-### Módulo 6 - Apache Kafka
+- Relizar una serie de pruebas dinámicas usando JUnit 5.
 
-- Continuamos con el postwork de la sesion 5.
-- Se crean los siguientes archivos
+### DESARROLLO
 
-```java
-package org.bedu.postworksone.kafka.serializer;
+Los casos de prueba anotados con `@Test` son pruebas estáticas, esto quiere decir que al momento de compilar la aplicación ya se tienen todos los elementos de la prueba listos para ejecutarse y su comportamiento no puede cambiarse. Esto es muy útil cuando tenemos un conjunto pequeño de datos con los que queremos hacer la prueba. Pero puede convertirse en un problema cuando tenemos un conjunto grande o dinámico de las mismas `@Test` tiene muchas limitaciones. 
 
-import org.apache.kafka.common.header.Headers;
-import org.apache.kafka.common.serialization.Serializer;
-import org.bedu.postworksone.documents.Doctor;
-import org.bedu.postworksone.protos.DoctorProtoConverter;
+Para sortear estas limitaciones, JUnit 5 agrega pruebas dinámicas, que son pruebas que se generan en tiempo de ejecución por un elemento conocido como fábrica de pruebas. Para esto también agrega una nueva anotación `@TestFactory`. 
 
-import java.util.Map;
+Los métodos anotados con `@TestFactory` sirven para crear fábricas de pruebas. Estos métodos deben regresar un `DynamicNode`, `Stream`, `Collection`, `Iterable`, `Iterator`, o arreglo de `DynamicNode`.
 
-public class KafkaDoctorSerializer implements Serializer<Doctor> {
+El cliente de la calculadora nos ha dicho que algunos de sus ingenieros dudan de la calidad de nuestra calculadora, ya que se realizaron muy pocas pruebas de la misma y nos pide que generemos 1000 pruebas de alguna operación realizada por la calculadora para ganarnos su total y entera confianza. 
 
-    @Override
-    public byte[] serialize(String s, Doctor doctor) {
+Para demostrarles que estamos comprometidos con nuestros clientes y queremos darles la tranquilidad a todos los miembros de su equipo, hemos decidido que realizaremos 1000 pruebas. Como no queremos estar todo el día escribiendo las pruebas, y después de una larga sesión de planeación con los Projects Managers, el becario (quién acaba de terminar la sesión 3 de este módulo y por lo tanto ya conoce la respuesta al problema) nos ha sugerido que usemos una prueba dinámica para generar las 1000 evidencias que necesitamos.
 
-        return DoctorProtoConverter.from(doctor).toByteArray();
+En este postwork deberás crear una prueba dinámica sobre cualquiera de las operaciones de la calculadora. La prueba debe ejecutarse al menos 1000 veces con números distintos, y debes garantizar que todas las ejecuciones terminen con un resultado exitoso.
+
+A continuación te dejamos una lista de recursos donde podrás obtener más información de `@TestFactory`:
+- [https://mincong.io/2021/04/09/junit-5-dynamic-tests/](JUnit 5: Dynamic Tests with TestFactory)
+- [https://javabydeveloper.com/junit-5-dynamic-tests-testfactory-with-examples/](Junit 5 dynamic tests @TestFactory with examples)
+- [https://roytuts.com/dynamic-tests-testfactory-in-junit-5/](Dynamic Tests – @TestFactory in Junit 5)
+
+
+<details>
+  <summary>Solución</summary>
+
+  Comenzamos escribiendo la clase que contiene contendrá el método que servirá como fábrica de pruebas:
+
+  ```java
+  class CalculadoraTest {
+
+
+  }
+  ```
+
+  De todas las opciones que podemos usar como tipo de retorno para `@TestFactory` los dos más fáciles de usar son los que regresan un `Stream` o un `Collection`. En este caso usaremos la primera opción y haremos que el método regrese un `Stream` de objetos de tipo `DynamicTest`. También inicializaremos el objeto calculadora que usaremos para la comprobación.
+
+  ```java
+  class CalculadoraTest {
+
+    @TestFactory
+    Stream<DynamicTest> dynamicTestsFromStreamInJava8() {
+        Calculadora calculadora = new Calculadora();
     }
+  }
+  
+  ```
 
+  Lo siguiente que haremos es definir dos conjuntos de datos. El primero contiene los valores de entrada que le daremos a la calculadora. En este caso serán los números del 0 al 9999, con esto generaremos nuestras 1000 pruebas. El segundo conjunto de datos contiene los valores que estamos esperando como respuesta. Para no complicar mucho el código lo que haremos será multiplicar cada valor por 2. Eso quiere decir que probaremos que al multiplicar 0 * 2 obtenemos como resultado 0; al multiplicar 1 * 2 obtendremos como resultado 2; al multiplicar 1 * 3 obtendremos como resultado 6; y así sucesivamente. 
 
-    @Override
-    public void configure(Map<String, ?> configs, boolean isKey) {
-        //Nothing to do, this serializer does not need extra configuration
+  ```java
+  
+class CalculadoraTest {
+
+    @TestFactory
+    Stream<DynamicTest> dynamicTestsFromStreamInJava8() {
+
+        Calculadora calculadora = new Calculadora();
+        List<Integer> entradas = IntStream.range(0, 1000).boxed().toList();
+        List<Integer> resultados = IntStream.range(0, 1000).map(n -> n * 2).boxed().toList();
+  
     }
+}  
+  
+  ```
 
-    @Override
-    public byte[] serialize(String topic, Headers headers, Doctor data) {
-        return DoctorProtoConverter.from(data).toByteArray();
-    }
+Por último creamos el `Stream` con el código dinámico de la prueba. Este tomará cada uno de los valores del primer conjunto de datos, `entradas`, aplicará la operación de multiplicación * 2 y verificará que el resultado obtenido corresponde al valor esperado en `resultados`:
 
-    @Override
-    public void close() {
-        //Nothing to do, this serializer does not need to release resources
-    }
-}
-```
-```java
-package org.bedu.postworksone.protos;
 
-import lombok.experimental.UtilityClass;
-import org.bedu.postworksone.documents.Doctor;
-import org.bedu.postworksone.protos.models.DoctorProto;
+  ```java
+class CalculadoraTest {
 
-@UtilityClass
-public class DoctorProtoConverter {
-    public DoctorProto.Doctor from(Doctor doctor) {
-        DoctorProto.Doctor.Builder builder = DoctorProto.Doctor.newBuilder();
+    @TestFactory
+    Stream<DynamicTest> dynamicTestsFromStreamInJava8() {
 
-        builder.setId(doctor.getId())
-                .setName(doctor.getName())
-                .setLastname(doctor.getLastname())
-                .setBirthday(doctor.getBirthday().toString())
-                .setSpecialized(doctor.isSpecialized())
-                .setYearsExperience(doctor.getYearsExperience());
-
-        if (doctor.isSpecialized() && !doctor.getSpeciality().isBlank()) {
-            builder.setSpeciality(doctor.getSpeciality());
-        }
-
-        return builder.build();
-    }
-}
-
-```
-
-- Modificamos el archivo _application.properties_
-```bash
-spring.data.mongodb.uri=mongodb://localhost:27017/postwork_sesion_cinco
-logging.level.org.springframework.data.mongodb.core.MongoTemplate=DEBUG
-#Kafka
-spring.kafka.bootstrap-servers=localhost:9092
-spring.kafka.producer.value-serializer=org.bedu.postworksone.kafka.serializer.KafkaDoctorSerializer
-```
-- Y hacemos uso de DoctorServiceImpl para enviar el registro al servidor kafka
-```java
-package org.bedu.postworksone.servicesImpl;
-
-import lombok.RequiredArgsConstructor;
-import org.bedu.postworksone.documents.Doctor;
-import org.bedu.postworksone.repositories.DoctorRepository;
-import org.bedu.postworksone.services.DoctorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
-@Service("doctorServiceProtobuf")
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class DoctorServiceImpl implements DoctorService {
-    private static final String TOPIC_NAME = "doctors";
-
-    private final DoctorRepository doctorRepository;
-    private final KafkaTemplate<String, Doctor> kafkaTemplate;
-
-    private String getDate() {
-        return LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
-    }
-
-    @Override
-    public Mono<Doctor> obtenerPorId(String id) {
-        return doctorRepository.findById(id);
-    }
-
-    @Override
-    public Flux<Doctor> obtenerTodos() {
-        return doctorRepository.findAll();
-    }
-
-    @Override
-    public Mono<Doctor> saveDoctor(Doctor doctor) {
-        return doctorRepository.save(doctor).map(d -> {
-            kafkaTemplate.send(TOPIC_NAME, getDate(), d);
-            return d;
-        });
-    }
-
-    @Override
-    public void delete(String id) {
-        doctorRepository.deleteById(id);
-    }
-
-    @Override
-    public Mono<Doctor> updateDoctor(Doctor doctor) {
-        return doctorRepository.save(doctor);
+        Calculadora calculadora = new Calculadora();
+        List<Integer> entradas = IntStream.range(0, 1000).boxed().toList();
+        List<Integer> resultados = IntStream.range(0, 1000).map(n -> n * 2).boxed().toList();
+        
+        return entradas.stream()
+                .map(numero -> DynamicTest.dynamicTest("multiplicando: " + numero,
+                        () -> {
+                            assertEquals(calculadora.multiplica(numero, 2), resultados.get(numero));
+                        }));
     }
 }
-```
+  ```
 
-**Nota** Debes iniciar el servidor Apache Kafka y crear el tópico como se hizo en los ejercicios
+Al ejecutar la prueba debes obtener un resultado exitoso y un mensaje indicando que se han ejecutado las 1000 pruebas. 
 
-### Contexto general
+![imagen](img/img_01.png)
 
-El dueño del sistema desea tener el registro de todos los doctores dados de alta en un servidor de Apache Kafka, esto para alimentar otros sistemas que puede monetizar y necesitan estar actualizados.
-
-El servidor existe en localhost:9092 y tiene un tópico llamado _doctors_.
-
-### Resultado esperado
-
-Al finalizar este ejercicio se debe recibir la información de cada nuevo registro cuando se ejecuta el siguiente comando
-
-```bash
-    bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic doctors
-```
+</details>

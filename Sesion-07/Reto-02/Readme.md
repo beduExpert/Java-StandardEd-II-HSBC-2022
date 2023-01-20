@@ -1,11 +1,48 @@
-## Reto 2: 
+# Reto 2 - Pruebas unitarias con JUnit
 
-### Objetivos
-- Analizar endpoint y la información disponible y pensar casos en producción donde dicha información sería de gran ayuda.
+## :dart: Objetivo
 
+- Utilizar JUnit
+- Desarrollar pruebas utilizando distintas características de JUnit
 
-### Requisitos
-- Ejemplo02
+## ⚙ Requisitos
 
-### Desarrollo
-1. Navega en los edpoints disponibles de Spring actuator y analiza la información disponible en ellos. Piensa y anota ejemplos donde dicha información pueda ser verdaderamente útil en producción. Posteriormente, abrir un diálogo sobre el tema.
+- IntelliJ IDEA
+- Java
+- Gradle
+- JUnit
+- JUnit 5
+- Code with me
+- Una cuenta de GitHub
+
+## Desarrollo
+
+Utilizando como base el siguiente código de la calculadora realiza las siguientes pruebas
+
+- Una prueba que solo se ejecute cunado nos encontramos en nuestro sistema operativo actual
+- Una prueba que solo se ejecute en algún sistema operativo diferente a nuestro sistema operativo actual
+- Una prueba que solo se ejecute en el ambiente de desarrollo y configurar nuestras variables de entorno para indicar
+  que estamos en el ambiente de desarrollo
+- Una prueba parametrizada para la suma
+- Una prueba parametrizada para la multiplicación
+- Una prueba con un display name distinto al nombre de la función
+
+`Calculator.java`
+
+```java
+public class Calculator {
+
+    public int add(int a, int b) {
+        return a + b;
+    }
+
+    public int multiply(int a, int b) {
+        int result = 0;
+        for (int i = 0; i < b; i++) {
+            result += add(result, a);
+        }
+        return result;
+    }
+}
+```
+

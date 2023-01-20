@@ -1,73 +1,105 @@
-## Ejemplo 01: Instalación y uso básico de Apache Kafka
+## Ejemplo 01: Pruebas unitarias con JUnit 
 
-### Objetivo
-1. Instalar Apache Kafka y hacer un ejemplo sencillo
+### OBJETIVO
 
-### Procedimiento
+- Aprender a crear y ejecutar una prueba usando JUnit 
 
-**Nota** Estas instrucciones de instalación són aptas sólo para ambientes de desarrollo y demostrativos.
+### DESARROLLO
 
-#### Descargar Apache Kafka
-2. Descarga el archivo [kafka_2.11-2.3.1.tgz](https://www-us.apache.org/dist/kafka/2.3.1/kafka_2.11-2.3.1.tgz) (Si falla el link puedes buscarlo en el [sitio oficial](https://kafka.apache.org/downloads)).
-3. Descomprime el archivo para tener la siguiente estructura
-```bash
-    kafka_2.12-2.3.1
-    ├── bin
-    ├── config
-    ├── libs
-    ├── LICENSE
-    ├── logs
-    ├── NOTICE
-    └── site-docs
+JUnit es uno de los frameworks de pruebas más populares en el ecosistema de la tecnología Java. La versión 5 de JUnit contiene muchas características útiles que nos ayudan a cumplir con el objetivo de desarrollar muchos tipos distintos de pruebas unitarias y de integración. 
+
+#### Arquitectura
+
+JUnit 5 está compuesto por una variedad de módulos diferentes divididos en tres módulos:
+
+- **JUnit Platform**: La plataforma es el módulo responsable de ejecutar las pruebas en la JVM. Define una serie de interfaces poderosas entre JUnit y sus clientes, como las herramientas de compilación (Gradle, Maven) o los IDEs.
+- **JUnit Jupiter**: Es el módulo que contiene los modelos y extensiones de JUnit. Este será el módulo que usaremos para escribir nuestras pruebas.
+- **JUnit Vintage**: Soporta la ejecución de pruebas basadas en JUnit 3 y 4 dentro de un entorno JUnit 5. Sirve mucho para cuando tenemos aplicaciones o código legado.
+
+#### Anotaciones básicas
+
+- `@Test`: Esta es la anotación que más usarás de JUnit. Indica que un método debe tratarse como un caso de una prueba unitaria. JUnit ejecuta todos los métodos habilitados que contengan esta anotación.
+- `@Disabled`: Indica que un caso de prueba particular debe ignorarse, y por lo tanto no se ejecutará.
+- `@BeforeEach`: Indica que el método anotado será ejecutado antes de cada uno de los métodos de prueba. Se usa cuando queremos inicializar y reinicializar información o configuración antes de cada prueba.
+- `@AfterEach`: Indica que el método anotado se ejecutará después de cada uno de los métodos de prueba. Se usa cuando queremos limpiar o liberar algún recurso después de cada prueba.
+- `@BeforeAll`: Indica que el método anotado se ejecutará antes de ejecutar los métodos de prueba. Se ejecuta una sola vez durante toda la prueba.
+- `@AfterAll`: Indica que el método anotado se ejecutará después de que se haya terminado la ejecución de todos los métodos de prueba. Se ejecuta una solo vez durante toda la prueba.
+
+
+#### Implementación
+
+Lo primero que debemos hacer es incluir la dependencia de JUnit en nuestro proyecto. Esto lo hacemos colocando la siguiente línea en el archivo `build.gradle`, las cuales indican que debemos usar la dependencia de Junit Jupiter solo en la etapa de pruebas:
+
+```groovy
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
 ```
 
-#### Iniciar Zookeeper y Apache Kafka
+Ahora creamos una clase que contenga la siguiente lógica de sumas y restas.
 
-Apache Kafka hace uso de Zookeeper para matener la sincronizcación y la alta disponibilidad. Si se tiene instalado y configurado este sistema se recomienda usarlo. Pero para este ejemplo podemos usar el que está incluído.
+```java
+public class Calculadora{
 
-4. A partir del directorio descomprimido ejecuta:
-```bash
-   bin/zookeeper-server-start.sh config/zookeeper.propertie
-```
-5. Con Zookeeper iniciado, desde otra consola ejecuta:
-```bash
-   bin/kafka-server-start.sh config/server.properties
-```
+    public int suma(int a, int b) {
+        return a + b;
+    }
 
-#### Crear un tópico
+    public int resta(int a, int b) {
+        return a - b;
+    }
 
-Para poder hacer el intercambio de mensajes es necesario crear un tópico, de lo contario el sistema fallará al publicar un mensaje por no existir la cola correspondiente.
+    public int multiplica(int a, int b) {
+        return a * b;
+    }
+}
 
-6. Para crear un tópico llamado _bedu-msg_ ejecuta desde una nueva consola la instrucción
-```bash
-   bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic bedu-msg
 ```
 
-En este ejemplo estamos creando una única partición y una única copia de nuestra cola de mensajes.
+Ahora implementamos la clase de prueba que nos permitirá verificar su funcionamiento:
 
-#### Conectar un productor
+```java
+class CalculadoraTest {
 
-7. Ejecuta el comando:
-```bash
-   bin/kafka-console-producer.sh --broker-list localhost:9092 --topic bedu-msg
+    private Calculadora calculadora = new Calculadora();
+
+    @Test
+    @DisplayName("Prueba suma")
+    void sumaTest() {
+        int esperado = 5;
+
+        assertEquals(esperado, calculadora.suma(3, 2));
+    }
+
+    @Test
+    @DisplayName("Prueba resta")
+    void restaTest() {
+        int esperado = 1;
+
+        assertEquals(esperado, calculadora.resta(3, 2));
+    }
+
+    @Test
+    @DisplayName("Prueba multiplicación")
+    void multiplicaTest() {
+        int esperado = 6;
+
+        assertEquals(esperado, calculadora.multiplica(3, 2));
+    }
+}
 ```
 
-El puerto 9092 está configurado en el archivo config/server.properties
 
-Al ejecutarlo tendrás el prompt _>_
+Ejecuta la prueba haciendo clic derecho sobre el editor de código y seleccionando la opción `Run CalculadoraTest` o haciendo clic sobre las dos flechas verdes que aparecen junto al nombre de la clase:
 
-Puedes comenzar a escribir mensajes. Cada nueva línea inicia un mensaje nuevo.
+![imagen](img/img_01.png)
 
-#### Conectar un consumidor
+Debes ver el siguiente resultado en la consola del IDE:
 
-8. En una nueva consola ejecuta el comando:
-```bash
-   bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic bedu-msg --from-beginning
-```
-
-Gracias a la opción _--from-beginning_ nuestra consola recibe el acumulado de todos los mensajes que se han enviado a ese tópico. Si queremos recibir sólo los que se generen luego de la conexión, omitimos esa instrucción.
-
-#### Comunicación en tiempo real
-
-9. Desde la consola del productor escribe un nuevo mensaje y verás cómo se refleja inmediatamente en la consola del consumidor.
-
+![imagen](img/img_02.png)

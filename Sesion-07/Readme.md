@@ -1,23 +1,39 @@
+# Sesión 7: JUnit & TestNG
 
-## Sesión 07: Spring DevTools y Actuator
+## :dart: Objetivos
 
-### OBJETIVOS 
+- Utilizar JUnit
+- Utilizar TestNG
+- Comparar las herramientas JUnit y TestNG
 
-- Conocer herramientas de desarrollo que ahorren tiempo útil.
-- Conocer Spring Dev Tools y sus funcionalidades.
-- Conocer Spring Actuator y aplicar ciertos cambios en las aplicaciones java sin necesidad de reiniciar el servidor (desarrollo).
+## ⚙ Requisitos
+
+- Editor de código
+  - IntelliJ IDEA
+- Programación colaborativa
+  - Code with me
+- Control de versiones.
+  - Git
+  - Tener una cuenta de GitHub
+- Entorno de desarrollo de Java.
+  - Java JDK 8+
+  - Gradle 7+
+- Frameworks de pruebas
+  - Junit 5.7.x
+  - TestNG 7.4.x
+  - Selenium 3.x
 
 
-#### ORGANIZACION DE LA CLASE 
+## 📂 Organización de la clase
 
-- Spring DevTools
-	- [Ejemplo 01](Ejemplo-01)
-	- [Reto 01](Reto-01)
-	
--Spring Boot Actuator 
-	- [Ejemplo 02](Ejemplo-02)
-	- [Reto 02](Reto-02)
-	
--Propiedades de Spring DevTools
-	- [Ejemplo 03](Ejemplo-03)
-	- [Reto 03](Reto-03)
+- [Ejemplo 01:  Diferencias entre JUnit 4 y 5](./Ejemplo-01)
+    - [Reto 01: Migrar pruebas de JUnit 4 a JUnit 5](./Reto-01)
+- [Ejemplo 02: Features de JUnit](./Ejemplo-02)
+    - [Reto  02: Pruebas unitarias con JUnit](./Reto-02)
+- [Ejemplo 03: TestNG](./Ejemplo-03)
+    - [Reto 03: Pruebas con Selenium](./Reto-03)
+- [Postwork:](./Postwork)
+
+
+
+

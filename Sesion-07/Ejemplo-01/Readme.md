@@ -1,57 +1,116 @@
-## Ejemplo 01: Spring DevTools
+# Ejemplo # - Diferencias entre JUnit 4 y 5
 
-### Objetivo
-- Conocer algunas funcionalidades de Spring Dev Tools
-- Reducir el tiempo en desarrollo (en la compilación, recarga de aplicación, etc)
+## :dart: Objetivos
 
-### Requisitos
-- JDK 8+
-- Maven
+- Comparar las herramientas JUnit 4 y JUnit 5
 
-### Desarrollo
-1. Crea un proyecto con spring initializr que contenga las siguientes dependencias:
-- - Lombok
-- - Spring Dev Tools
-- - Spring Web
+## ⚙ Requisitos
 
-2. Inicia la aplicación
+- IntelliJ IDEA
+- Java
+- Gradle
+- JUnit 5
 
-3. Crea un paquete de controladores `controllers` dentro del paquete principal y dentro de este agrega el siguiente controlador básico:
+
+## Desarrollo
+
+### Razones para migrar de JUnit 4 a JUnit 5
+
+Entre las múltiples razones que podemos encontrar para utilizar JUnit 5 podemos encontrar: 
+- JUnit 5 aprovecha las características de Java 8 o posterior, como las funciones lambda, lo que hace que las pruebas sean más potentes y fáciles de mantener.
+- JUnit 5 ha agregado algunas características nuevas muy útiles para describir, organizar y ejecutar pruebas. Por ejemplo, las pruebas obtienen mejores nombres para mostrar y se pueden organizar jerárquicamente.
+- JUnit 5 está organizado en varias bibliotecas, por lo que solo se importan a su proyecto las funciones que necesita. Con sistemas de compilación como Maven y Gradle, incluir las bibliotecas adecuadas es fácil.
+- JUnit 5 puede usar más de una extensión a la vez, lo que JUnit 4 no podría (solo se puede usar un corredor a la vez). Esto significa que puede combinar fácilmente la extensión Spring con otras extensiones (como su propia extensión personalizada).
+
+### Diferencias entre JUnit 4 y JUnit 5
+
+### Importaciones
+
+JUnit 5 usa el nuevo org.JUnit.jupiter paquete para sus anotaciones y clases. Por ejemplo, org.JUnit.Test se convierte en org.JUnit.jupiter.api.Test.
+
+### Anotaciones
+
+![anotaciones junit 4 y 5](Java-Testing-2021/Sesion-03/Ejemplo-01/assets/anotaciones junit 4 y 5.png)
+
+### Arquitectura
+
+JUnit 4 tiene todo incluido en un solo archivo jar.
+
+Junit 5 se compone de 3 subproyectos, es decir, JUnit Platform, JUnit Jupiter y JUnit Vintage.
+
+- JUnit Platform
+ 
+    Define la API TestEngine para desarrollar nuevos marcos de prueba que se ejecutan en la plataforma.
+
+    
+- JUnit Júpiter
+
+    Tiene todas las nuevas anotaciones JUnit y la implementación de TestEngine para ejecutar pruebas escritas con estas anotaciones.
+    
+
+- JUnit Vintage
+
+    Para admitir la ejecución de pruebas escritas JUnit 3 y JUnit 4 en la plataforma JUnit 5.
+
+### Aserciones (Assertions)
+
+En Junit 4, org.junit.Assert tiene todos los métodos de aserción para validar los resultados esperados y resultantes.
+Aceptan un parámetro adicional para el mensaje de error como PRIMER argumento en la firma del método.
 
 ```java
-package org.bedu.ejemplo01.controllers;
+public static void assertEquals(long expected, long actual)
+public static void assertEquals(String message, long expected, long actual)
+```
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+En JUnit 5, org.junit.jupiter.Assertions contiene la mayoría de los métodos de aserción, incluidos los métodos adicionales de assertThrows () y assertAll (). assertAll () está en estado experimental a partir de hoy y se usa para aserciones agrupadas.
+Los métodos de aserciones de JUnit 5 también tienen métodos sobrecargados para admitir que se imprima un mensaje de error en caso de que la prueba falle
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+```java
+public static void assertEquals(long expected, long actual)
+public static void assertEquals(long expected, long actual, String message)
+public static void assertEquals(long expected, long actual, Supplier messageSupplier)
+```
 
-@RestController
-public class HelloController {
+### Suposiciones (Assumptions)
 
-	@GetMapping(value = "hello-world")
-	public Message sayHelloWorld() {
-		return new Message("Hola mundo!!!");
-	}
+En Junit 4, org.junit.Assume contiene métodos para establecer suposiciones sobre las condiciones en las que una prueba es significativa. Tiene los siguientes cinco métodos:
 
-	@Data
-	@AllArgsConstructor
-	private class Message {
-		private String message;
-	}
+- assumeFalse()
+- assumeNoException()
+- assumeNotNull()
+- assumeThat()
+- assumeTrue()
+
+En Junit 5, org.junit.jupiter.api.Assumptions contiene métodos para establecer suposiciones sobre las condiciones en las que una prueba es significativa. Tiene los siguientes tres métodos:
+
+- assumeFalse()
+- assumingThat()
+- assumeTrue()
+
+
+### Aserciones vs. Suposiciones
+
+Al asumir, verificas los prerrequisitos de la prueba, si no están disponibles o no tienen el valor esperado, no tiene sentido continuar con la prueba.
+
+Por ejemplo, si estuviéramos probando el método borrar de un entrevistador, no tendría sentido ejecutar dicha prueba si el añadir un nuevo entrevistador fallo, entonces podríamos hacer uso de las suposiciones de la siguiente forma:
+
+```java
+@Test
+public void deletesAnExistentInterviewer() {
+    Interviewer interviewer = Interviewer.add(...);
+
+    Assumptions.assumeTrue(interviewer);
+
+    Assertions.assertEquals(interviewer.delete());
 }
 
 ```
-Notas: 
-- Recordar que la anotación `RestController` hace que se retornen respuestas en formato JSON de las entidades POJO por defecto.
 
-4. Guarda cambios y comprueba que la aplicación se ha reiniciado automáticamente.
+¿Por qué no simplemente usar aserciones? La diferencia es que si la aserción falla, la prueba fallará, pero si la suposición falla, la prueba se ignorará. Aunque en muchas pruebas se utilizan las aserciones, no es así como debería ser. **No queremos probar las funcionalidades de otros métodos**, pero queremos estar seguros de que funcionan correctamente.
 
-5. Descarga la extensión livereload para su navegador aquí: http://livereload.com/extensions/
+Si las pruebas están bien escritas para todas las partes del código, la parte que hace fallar la suposición tendría las pruebas adecuadas que fallarían.
 
-6. Establezca que la extensión puede tener acceso a la url del archivo, al localhost, o a todos los sitios (varía según el navegador).
+Por ejemplo, si nuestro método add no funciona correctamente, su prueba fallará y deletesAnExistentInterviewer se ignorará.
 
-7. Recargue la página en el navegador una última vez y posteriormente haga click en la extensión (Si se muestran las peticiones de red en la consola del navegador se mostrará que se hizo una petición a un archivo js. Este archivo es el que permite la recarga automática en vivo).
 
-8. Haga algún cambio en el proyecto y observe los cambios en el navegador automáticamente.
+

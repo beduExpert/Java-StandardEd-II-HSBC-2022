@@ -1,25 +1,82 @@
-## Postwork sesión 07: 
+# Postwork
 
-### Objetivo
-- Verificar conocimientos
+[Ver en Google docs](https://docs.google.com/document/d/1WCMWMi-sLFNS9DE5Mph2jx67Ng4pvS_Ra4cAl2EqVO8/edit?usp=sharing)
 
-### Contexto general
 
-Se ha comenzado el intercambio de datos entre los distintos sistemas, todo parecía funcionar sin problemas sin embargo, hoy por la mañana se recibió una llamada comentando que había problemas.
+## 🎯 OBJETIVOS
 
-De forma general, el sistema consta de tres módulos:
+- Comparar el funcionamiento de JUnit y TestNG en escenarios similares
+- Analizar cómo funciona la ejecución en paralelo en JUnit 5
+- Analizar cómo funciona la ejecución en paralelo en TestNG
 
-1. Aplicación móvil
-2. Página web
-3. Backend (El que se está desarrollando en los postworks)
+## 🚀 DESARROLLO
 
-También se comenta que justamente ayer, un técnico externo proporcionó una herramienta para cargar archivos excel de médicos y automáticamente mandarlos por la página web (esta herramienta no afecta el sistema, es completamente externa), lo cuál facilitó mucho trabajo manual (se enviaron muchísimos registros). Y se comprobó que todo funcionara bien al final.
+Antes de comenzar con la actividad te recomendamos revisar el siguiente recurso para que comprendas que hay detrás de la ejecución de pruebas en paralelo utilizando JUnit 5:
 
-Posteriormente se confirma que está fallando tanto la aplicación móvil como la página web. Comentan que en ambos casos unicamente se muestra un mensaje que dice "Oops, ha ocurrido algo de nuestro lado, intente más tarde."
+[Ejecución Paralela](https://junit.org/junit5/docs/5.3.0-M1/user-guide/index.html#writing-tests-parallel-execution)
 
-Te comentaron:
-> Hoy se comenzó a subir datos igual que ayer y de pronto apareció el mensaje
+Continuaremos con el desarrollo del software de entrevistadores y exploraremos la paralelización de pruebas con JUnit realizando el siguiente ejercicio:
 
-- ¿Cuál puede ser el problema?
-- ¿Cómo podrías verificar el problema?
-- ¿Cómo se soluciona el problema?
+- Configura tu proyecto e instala las dependencias necesarias 
+
+- Paralelizar la ejecución de tus pruebas
+
+### Sigue estas instrucciones:
+
+- En tu archivo build.grade asegurate de tener junit en su versión 5.3 o superior
+- En el mismo archivo asegurate que la configuración test luzca de la siguiente forma
+
+
+```
+test {
+    useJUnitPlatform()
+    systemProperty 'junit.jupiter.execution.parallel.enabled', 'true'
+}
+```
+
+-Ejecuta las pruebas
+-Cambia la configuración anterior a false y observa las diferencias en los tiempos de ejecución
+
+
+Para cerrar nuestro postwork, revisemos el siguiente video que realiza un benchmark de la ejecución en paralelo entre diferentes frameworks de pruebas:
+
+[¿Cuál tecnología es más eficiente para ejecutar los tests en paralelo?](https://www.youtube.com/watch?v=omX2IQvHA1A)
+
+
+## Indicaciones generales
+
+¿Terminaste la actividad? responde las siguientes preguntas:
+
+¿Notaste alguna diferencia en el tiempo de ejecución de las pruebas?
+_________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+¿Qué ventajas consideras que aporta la ejecución en paralelo?
+_________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+¿Crees que existe alguna desventaja de ejecutar nuestras pruebas en paralelo?
+_________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+
+¡Mucho éxito y reta tu potencial!
+
+## ✅ Checklist 
+
+Asegúrate que tu postwork contenga todo lo siguiente, ya que esto se evaluará al término del módulo.
+
+- [ ] Tu archivo de configuración build.grade cuenta la configuración  systemProperty 'junit.jupiter.execution.parallel.enabled', 'true'  
+
+
+
+
+- [ ] Tus pruebas se ejecutan en paralelo
+
+
+
+
+- [ ] Al cambiar la configuración `systemProperty 'junit.jupiter.execution.parallel.enabled', 'false’` tus pruebas se ejecutan secuencialmente  
+
+
+
+
+
+
+

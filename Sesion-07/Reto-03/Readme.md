@@ -1,13 +1,27 @@
-## Reto 3: 
+# Reto 3 - Pruebas con Selenium
 
-### Objetivos
-- Analizar y conocer las propiedades de spring dev tools.
+## :dart: Objetivos
 
+- Utilizar TestNG
+- Desarrolla pruebas con Selenium
 
-### Requisitos
-- Ejemplo03
+## ⚙ Requisitos
 
-### Desarrollo
-1. En la siguiente URL se muestran muchas posibles propiedades de configuración conmunes en un proyecto spring. Conoce y relacionate con las propiedades de spring dev tools:
+- IntelliJ IDEA
+- Java
+- Gradle
+- JUnit
+- TestNG
+- Selenium
 
-[propiedades spring dev tools](https://github.com/EduardoVa/utilities/blob/master/java/spring/application.properties#L1531)
+## Desarrollo
+
+Realizaremos pruebas sobre la siguiente página de una pregunta de stack overflow
+
+https://stackoverflow.com/questions/57455436/using-object-to-embed-svg-but-doesnt-show-anything/57536936#57536936
+
+- Una prueba que valide el título de la pregunta
+- Una prueba que valide el número de votos de la pregunta
+- Una prueba que valide el número de respuestas
+- Una prueba que valide el usuario de la primera respuesta
+- Una prueba que valide el número de la respuesta más votada 
