@@ -1,4 +1,4 @@
-# Sesión 7: JUnit & TestNG
+# Sesión 7: Selenium para automatización de pruebas
 
 ## :dart: Objetivos
 
