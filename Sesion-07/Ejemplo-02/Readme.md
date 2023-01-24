@@ -159,7 +159,7 @@ void palindromes(String candidate){
 
 ```
 
-### Plantilla de pruebas
+<!-- ### Plantilla de pruebas
 
 Un método @TestTemplate no es un caso de prueba normal, sino una plantilla para casos de prueba. Como tal, está diseñado
 para ser invocado varias veces dependiendo del número de contextos de invocación devueltos por los proveedores
@@ -239,4 +239,4 @@ La API de extensión TestTemplateInvocationContextProvider está diseñada princ
 de pruebas que se basan en la invocación repetitiva de un método similar a una prueba, aunque en diferentes contextos,
 por ejemplo, con diferentes parámetros, preparando la instancia de la clase de prueba de manera diferente o varias veces
 sin modificar el contexto. Consulte las implementaciones de pruebas repetidas o pruebas parametrizadas que utilizan este
-punto de extensión para proporcionar su funcionalidad.
+punto de extensión para proporcionar su funcionalidad. -->
