@@ -1,9 +1,9 @@
-# Reto 2 - Pruebas unitarias con JUnit
+# Reto 3 - Pruebas con Selenium
 
-## :dart: Objetivo
+## :dart: Objetivos
 
-- Utilizar JUnit
-- Desarrollar pruebas utilizando distintas características de JUnit
+- Utilizar TestNG
+- Desarrolla pruebas con Selenium
 
 ## ⚙ Requisitos
 
@@ -11,38 +11,17 @@
 - Java
 - Gradle
 - JUnit
-- JUnit 5
-- Code with me
-- Una cuenta de GitHub
+- TestNG
+- Selenium
 
 ## Desarrollo
 
-Utilizando como base el siguiente código de la calculadora realiza las siguientes pruebas
+Realizaremos pruebas sobre la siguiente página de una pregunta de stack overflow
 
-- Una prueba que solo se ejecute cunado nos encontramos en nuestro sistema operativo actual
-- Una prueba que solo se ejecute en algún sistema operativo diferente a nuestro sistema operativo actual
-- Una prueba que solo se ejecute en el ambiente de desarrollo y configurar nuestras variables de entorno para indicar
-  que estamos en el ambiente de desarrollo
-- Una prueba parametrizada para la suma
-- Una prueba parametrizada para la multiplicación
-- Una prueba con un display name distinto al nombre de la función
+https://stackoverflow.com/questions/57455436/using-object-to-embed-svg-but-doesnt-show-anything/57536936#57536936
 
-`Calculator.java`
-
-```java
-public class Calculator {
-
-    public int add(int a, int b) {
-        return a + b;
-    }
-
-    public int multiply(int a, int b) {
-        int result = 0;
-        for (int i = 0; i < b; i++) {
-            result += add(result, a);
-        }
-        return result;
-    }
-}
-```
-
+- Una prueba que valide el título de la pregunta
+- Una prueba que valide el número de votos de la pregunta
+- Una prueba que valide el número de respuestas
+- Una prueba que valide el usuario de la primera respuesta
+- Una prueba que valide el número de la respuesta más votada 

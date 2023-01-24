@@ -9,7 +9,7 @@
 
 - IntelliJ IDEA
 - Java
-- Gradle
+- Maven
 - JUnit
 - TestNG
 
@@ -56,32 +56,13 @@ características clave de Selenium TestNG:
   @BeforeTest, @AfterTest
 - WebDriver no tiene un mecanismo nativo para generar informes. TestNG puede generar el informe en un formato legible.
 
-`build.gradle`
-```
-plugins {
-    id 'java'
-}
-
-group 'org.example'
-version '1.0-SNAPSHOT'
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation 'junit:junit:4.13.1'
-    testImplementation 'org.testng:testng:7.4.0'
-    implementation 'org.seleniumhq.selenium:selenium-java:3.141.59'
-    implementation 'org.seleniumhq.selenium:selenium-support:3.141.59'
-}
-
-test {
-    useTestNG() {
-        // To generate reports by TestNG library
-        useDefaultListeners = true
-    }
-}
+`pom.xml`
+```xml
+<dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-java</artifactId>
+    <version>3.141.59</version>
+</dependency>
 ```
 
 `TestGitHub.java`

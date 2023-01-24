@@ -1,116 +1,140 @@
-# Ejemplo # - Diferencias entre JUnit 4 y 5
+## Ejemplo 1: TDD
 
-## :dart: Objetivos
+<div style="text-align: justify;">
 
-- Comparar las herramientas JUnit 4 y JUnit 5
+### 1. Objetivos :dart:
 
-## ⚙ Requisitos
+* Realizar pruebas de clases y métodos aislados  en específico en la JVM.
 
-- IntelliJ IDEA
-- Java
-- Gradle
-- JUnit 5
+### 2. Requisitos :clipboard:
 
+* JUnit y Thruth instalados.
 
-## Desarrollo
+### 3. Desarrollo :computer:
 
-### Razones para migrar de JUnit 4 a JUnit 5
+1. Creamos un nuevo proyecto y agregamos las dependencias de pruebas unitarias
 
-Entre las múltiples razones que podemos encontrar para utilizar JUnit 5 podemos encontrar: 
-- JUnit 5 aprovecha las características de Java 8 o posterior, como las funciones lambda, lo que hace que las pruebas sean más potentes y fáciles de mantener.
-- JUnit 5 ha agregado algunas características nuevas muy útiles para describir, organizar y ejecutar pruebas. Por ejemplo, las pruebas obtienen mejores nombres para mostrar y se pueden organizar jerárquicamente.
-- JUnit 5 está organizado en varias bibliotecas, por lo que solo se importan a su proyecto las funciones que necesita. Con sistemas de compilación como Maven y Gradle, incluir las bibliotecas adecuadas es fácil.
-- JUnit 5 puede usar más de una extensión a la vez, lo que JUnit 4 no podría (solo se puede usar un corredor a la vez). Esto significa que puede combinar fácilmente la extensión Spring con otras extensiones (como su propia extensión personalizada).
-
-### Diferencias entre JUnit 4 y JUnit 5
-
-### Importaciones
-
-JUnit 5 usa el nuevo org.JUnit.jupiter paquete para sus anotaciones y clases. Por ejemplo, org.JUnit.Test se convierte en org.JUnit.jupiter.api.Test.
-
-### Anotaciones
-
-![anotaciones junit 4 y 5](Java-Testing-2021/Sesion-03/Ejemplo-01/assets/anotaciones junit 4 y 5.png)
-
-### Arquitectura
-
-JUnit 4 tiene todo incluido en un solo archivo jar.
-
-Junit 5 se compone de 3 subproyectos, es decir, JUnit Platform, JUnit Jupiter y JUnit Vintage.
-
-- JUnit Platform
- 
-    Define la API TestEngine para desarrollar nuevos marcos de prueba que se ejecutan en la plataforma.
-
-    
-- JUnit Júpiter
-
-    Tiene todas las nuevas anotaciones JUnit y la implementación de TestEngine para ejecutar pruebas escritas con estas anotaciones.
-    
-
-- JUnit Vintage
-
-    Para admitir la ejecución de pruebas escritas JUnit 3 y JUnit 4 en la plataforma JUnit 5.
-
-### Aserciones (Assertions)
-
-En Junit 4, org.junit.Assert tiene todos los métodos de aserción para validar los resultados esperados y resultantes.
-Aceptan un parámetro adicional para el mensaje de error como PRIMER argumento en la firma del método.
-
-```java
-public static void assertEquals(long expected, long actual)
-public static void assertEquals(String message, long expected, long actual)
+```xml
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.8.2</version>
+            <scope>test</scope>
+        </dependency>
 ```
 
-En JUnit 5, org.junit.jupiter.Assertions contiene la mayoría de los métodos de aserción, incluidos los métodos adicionales de assertThrows () y assertAll (). assertAll () está en estado experimental a partir de hoy y se usa para aserciones agrupadas.
-Los métodos de aserciones de JUnit 5 también tienen métodos sobrecargados para admitir que se imprima un mensaje de error en caso de que la prueba falle
+es muy importante notar que las bibliotecas que estamos agregando vienen de dos fuentes distintas.
+
+2. Vamos a definir pruebas unitarias sobre una función de registro de usuarios. Para esto vamos a seguir una metodología en la que primero se definen las pruebas unitarias y posteriormente se da la especificación de la función. 
+
+3. Creamos una nueva clase de Java con el nombre *RegistrationUtil* . Dentro de este nuevo archivo agregamos la firma de la función sobre la cual vamos a definir las pruebas unitarias.
 
 ```java
-public static void assertEquals(long expected, long actual)
-public static void assertEquals(long expected, long actual, String message)
-public static void assertEquals(long expected, long actual, Supplier messageSupplier)
+    public boolean valida (String username, String password, String confirmP) {
+        return true;
+    }
 ```
 
-### Suposiciones (Assumptions)
+Esta función por ahora simplemente regresa True sin importar cuales sean sus argumentos.
 
-En Junit 4, org.junit.Assume contiene métodos para establecer suposiciones sobre las condiciones en las que una prueba es significativa. Tiene los siguientes cinco métodos:
+4. Vamos a agregar una especificación informal del funcionamiento correcto de nuestra aplicación en forma de comentario. Esto no representa ningún avance en la verificación del código simplemente es una guía para nosotros, que nos ayudará a saber cuales son los aspectos a testear sobre esta función.
 
-- assumeFalse()
-- assumeNoException()
-- assumeNotNull()
-- assumeThat()
-- assumeTrue()
-
-En Junit 5, org.junit.jupiter.api.Assumptions contiene métodos para establecer suposiciones sobre las condiciones en las que una prueba es significativa. Tiene los siguientes tres métodos:
-
-- assumeFalse()
-- assumingThat()
-- assumeTrue()
-
-
-### Aserciones vs. Suposiciones
-
-Al asumir, verificas los prerrequisitos de la prueba, si no están disponibles o no tienen el valor esperado, no tiene sentido continuar con la prueba.
-
-Por ejemplo, si estuviéramos probando el método borrar de un entrevistador, no tendría sentido ejecutar dicha prueba si el añadir un nuevo entrevistador fallo, entonces podríamos hacer uso de las suposiciones de la siguiente forma:
-
-```java
-@Test
-public void deletesAnExistentInterviewer() {
-    Interviewer interviewer = Interviewer.add(...);
-
-    Assumptions.assumeTrue(interviewer);
-
-    Assertions.assertEquals(interviewer.delete());
-}
+```Java
+    /**
+     * La entrada no es válida si ...
+     * ... username/password es vacío
+     * ...El username contiene el caracter #
+     * ...Las contraseña no coinciden
+     * ...La contraseña tiene una longitud menor a 8 caracteres
+     */
 
 ```
 
-¿Por qué no simplemente usar aserciones? La diferencia es que si la aserción falla, la prueba fallará, pero si la suposición falla, la prueba se ignorará. Aunque en muchas pruebas se utilizan las aserciones, no es así como debería ser. **No queremos probar las funcionalidades de otros métodos**, pero queremos estar seguros de que funcionan correctamente.
+5. Ahora generaremos un archivo de testing para esta clase. Para eso damos click derecho sobre el nombre del Objeto y seleccionamos la opción de Generate > Test...
 
-Si las pruebas están bien escritas para todas las partes del código, la parte que hace fallar la suposición tendría las pruebas adecuadas que fallarían.
+Vamos a usar los siguientes valores para el archivo de testing:
 
-Por ejemplo, si nuestro método add no funciona correctamente, su prueba fallará y deletesAnExistentInterviewer se ignorará.
+- Testing Library : JUnit5
+- Class name: RegistrationUtilTest
+
+el resto de los valores los dejamos en blanco. Damos click en Ok. 
+
+7. Definamos la prueba unitaria para el caso en el que el usuario o contraseña son vacíos. Como sigue:
+
+```java
+    @Test
+    public void username1 (){
+        boolean result = registro.valida("", "123","123");
+        assertFalse(result);
+    }
+```
+
+La anatomía de una pruieba unitaria es la siguiente:
+
+- La anotación `@Test`.
+- Se define como una función sin parámetros ni tipo de regreso.
+- En el cuerpo de la función se hace la llamada a la funcionalidad que estamos testeando, con ciertos parámetros.
+- Se hace una declaración 
+
+La declaración va a depender del tipo de dato que arroje como resultado la funcionalidad testeada.
+
+Al ejecutar esta prueba unitaria, vemos que no pasa pues estamos esperando un valor de regreso False y nuestra función siempre regresa True. 
+
+8. Definimos ahora una función que si pase la prueba, pero sin cumplir la segunda condición.
+
+```java
+    @Test
+    public void username2 (){
+        boolean result = registro.valida("Jose#", "123","123");
+        assertFalse(result);
+    }
+```
+
+En este caso todos los campos estan presentes por lo que la prueba unitaria debería pasar.
+
+9. Damos una prueba unitaria para el caso en el que la contraseña sea de longitud menor a 8.
+
+```java
+    @Test
+    public void password1 (){
+        boolean result = registro.valida("Jose", "123","123");
+        assertFalse(result);
+    }
+
+```
+
+10. Escribimos la prueba que falla cuando las contraseñas no coinciden.
+
+```java
+    @Test
+    public void password2 (){
+        boolean result = registro.valida("Jose","12345678","abcdefghi");
+        assertFalse(result);
+    }
+```
+
+11.  La siguiente prueba pasa todos los criterios.
+
+```java
+    @Test
+    public void password3 (){
+        boolean result = registro.valida("Jose","12345678","abcdefghi");
+        assertTrue(result);
+    }
+```
 
 
+14. Recordemos que estamos trabajando con un desarrollo a la inversa en donde a partir de las pruebas unitarias se da la implementación para la función que estamos testeando. Entonces regresamos a `RegistrationUtil` e implementamos la función.
+
+```java
+    public boolean valida (String username, String password, String confirmP) {
+        if (username.isEmpty() || password.isEmpty() || confirmP.isEmpty()) return false;
+        if (username.contains("#")) return false;
+        if (password != confirmP) return false;
+        if (password.length() < 8) return false;
+        return true;
+    }
+```  
+
+</div>
 

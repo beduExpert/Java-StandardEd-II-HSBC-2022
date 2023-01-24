@@ -17,7 +17,7 @@
   - Tener una cuenta de GitHub
 - Entorno de desarrollo de Java.
   - Java JDK 8+
-  - Gradle 7+
+  - Maven
 - Frameworks de pruebas
   - Junit 5.7.x
   - TestNG 7.4.x
@@ -26,13 +26,11 @@
 
 ## 📂 Organización de la clase
 
-- [Ejemplo 01:  Diferencias entre JUnit 4 y 5](./Ejemplo-01)
-    - [Reto 01: Migrar pruebas de JUnit 4 a JUnit 5](./Reto-01)
+- [Ejemplo 01: Test Driven Development](./Ejemplo-01)
 - [Ejemplo 02: Features de JUnit](./Ejemplo-02)
-    - [Reto  02: Pruebas unitarias con JUnit](./Reto-02)
+    - [Reto  02: Pruebas unitarias con JUnit](./Reto-01)
 - [Ejemplo 03: TestNG](./Ejemplo-03)
-    - [Reto 03: Pruebas con Selenium](./Reto-03)
-- [Postwork:](./Postwork)
+    - [Reto 03: Pruebas con Selenium](./Reto-02)
 
 
 
