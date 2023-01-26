@@ -1,13 +1,12 @@
 
-## Sesión 08: Deploy
+## Sesión 08: Despliegue con Server Liberty
 
 ### OBJETIVOS 
 
 - Conocer el proceso para realizar el despliegue de una aplicación desarrollada con Spring Boot a un ambiente productivo
 - Realizar el despliegue mediante un archivo JAR
 - Realizar el despliegue mediante un archivo WAR
-- Realizar el despliegue mediante un contenedor de Docker
-- Realizar el despliegue hacia un servidor NGINX
+
 
 
 #### ORGANIZACION DE LA CLASE 
