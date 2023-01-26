@@ -1,8 +1,8 @@
-## Ejemplo 1: Creando un JAR de Spring Boot
+## Ejemplo 1
 
 ### Objetivo
-1. Utilizar spring-boot-maven-plugin para la creación de un jar ejecutable que contenga una aplicación web.
-2. Comprobar el funcionamiento de la aplicación web mediante la ejecución del jar.
+1. Construir una aplicación con Spring Boot para publicarla.
+2. Utilizar spring-boot-maven-plugin para la creación de un jar ejecutable que contenga una aplicación web.
 
 ### Requisitos previos
 - JDK
@@ -23,5 +23,30 @@ public class SaludoController {
     }
 }
 ```
-6. En terminal ejecutaremos el comando `mvn clean package` para crear nuestro archivo jar, que se ubicará dentro de la carpeta _target_
-7. Finalmente, ejecutaremos `java -jar ejemplo-jar-0.0.1-SNAPSHOT.jar` para levantar el servidor Tomcat embebido y poder probar nuestra aplicación accediendo a _localhost:8080_
+6. En terminal ejecutaremos alguno de los siguientes comandos según sea el caso:
+
+- **Mac**
+
+```bash
+./mvnw package
+```
+- **Windows**
+
+```bash
+mvnw.cmd package
+```
+- **Linux**
+
+```bash
+./mvnw package
+```
+
+7. Ahora puede ejecutar la aplicación en el contenedor web integrado de Tomcat ejecutando el archivo JAR que creó:
+
+```bash
+java -jar target/guide-spring-boot-0.1.0.jar
+```
+
+Ve a la http://localhost:8080/ para acceder a la aplicación.
+
+8. Cuando necesite detener la aplicación, presione CTRL+Cen la sesión de línea de comandos donde ejecutó la aplicación.

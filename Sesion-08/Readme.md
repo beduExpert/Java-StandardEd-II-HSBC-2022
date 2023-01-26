@@ -12,15 +12,11 @@
 
 #### ORGANIZACION DE LA CLASE 
 
-- Jar ejecutable usando Spring Boot
+- Creación del Proyecto y creación del jar ejecutable
 	- [Ejemplo 01](Ejemplo-01)
-	- [Reto 01](Reto-01)
 
--  Aprender a usar un archivo war de Spring Boot
+- Spring Liberty
 	- [Ejemplo 02](Ejemplo-02)
-	- [Reto 02](Reto-02)
 
-- Aprender a desplegar aplicaciones Docker detrás de un servidor NGinx y en un contenedor Docker
+- Deploy de la aplicación 
 	- [Ejemplo 03](Ejemplo-03)
-	- [Reto 03](Reto-03)
-
